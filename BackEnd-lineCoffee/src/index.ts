@@ -19,6 +19,7 @@ import wishListRouter from "./modules/WishList/WishList.routes";
 import reportsRouter from "./modules/Reports/Reports.routes";
 import cookieParser from "cookie-parser"; 
 import helmet from "helmet";
+import categoriesRouter from "./modules/Categories/categories.routes";
 
 
 
