@@ -4,7 +4,6 @@ import connectDB from "./database";
 import { globalError } from "./middlewares/errors/globalError";
 import { AppError } from "./middlewares/errors/appError";
 import userRouter from "./modules/Users/users.routes";
-import categoriesRouter from "./modules/Categories/categories.routes";
 import ProductsRouter from "./modules/Products/products.routes";
 import notificationRouter from "./modules/Notifications/notification.routes";
 import orderRouter from "./modules/Orders/order.routes";
