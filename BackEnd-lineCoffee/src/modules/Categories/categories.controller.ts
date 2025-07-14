@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { catchError } from "../../middlewares/errors/catchError";
 import { Categories, ICategories } from "./categories.models";
 import { AppError } from "../../middlewares/errors/appError";
+import fs from "fs";
+import path from "path";
 
 
 
@@ -16,11 +18,9 @@ export const createCategory = catchError(
       createdAt: new Date(),
     };
 
-    // ✅ لو فيه صورة مرفوعة
-      if (req.file) {
-        // الصورة جوه فولدر /categories/ فبنحط المسار
-        categoryData.image = `categories/${req.file.filename}`;
-
+    // ✅ حفظ الصورة
+    if (req.file) {
+      categoryData.image = `categories/${req.file.filename}`;
     }
 
     const category = await Categories.create(categoryData);
@@ -30,6 +30,7 @@ export const createCategory = catchError(
       .json({ message: req.__("Category created successfully!"), category });
   }
 );
+
 
 
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,19 +50,41 @@ export const getCategoryById = catchError(async (req: Request, res: Response, ne
 
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
 //? update category (admin)
-export const updateCategory = catchError(async (req: Request, res: Response, next: NextFunction) => {
-      const updatedData: any = {
-        categoryName: req.body.categoryName,
-        categoryDescription: req.body.categoryDescription,
-      };
 
-      if (req.file) {
-        updatedData.image = req.file.filename;
+export const updateCategory = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const existingCategory = await Categories.findById(req.params.id);
+    if (!existingCategory)
+      return next(new AppError("Category not found!", 404));
+
+    // إعداد الداتا الجديدة
+    const updatedData: any = {
+      categoryName: req.body.categoryName,
+      categoryDescription: req.body.categoryDescription,
+    };
+
+    // ✅ لو فيه صورة جديدة
+    if (req.file) {
+      // حذف الصورة القديمة لو موجودة
+      if (existingCategory.image) {
+        const oldImagePath = path.join("uploads", existingCategory.image);
+        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
       }
-    const category = await Categories.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!category) return next(new AppError("Category not found!", 404));
-    res.status(200).json({ message: "Category updated successfully!", category });
-});
+
+      updatedData.image = `categories/${req.file.filename}`;
+    }
+
+    const category = await Categories.findByIdAndUpdate(
+      req.params.id,
+      updatedData,
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json({ message: "Category updated successfully!", category });
+  }
+);
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
 //? delete category (admin)
 export const deleteCategory = catchError(async (req: Request, res: Response, next: NextFunction)=>{
