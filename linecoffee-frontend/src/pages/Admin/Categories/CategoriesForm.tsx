@@ -7,6 +7,7 @@ type Props = {
         _id: string;
         categoryName: string;
         categoryDescription?: string;
+        image?: string;
         createdAt: string;
     } | null;
 };
@@ -15,6 +16,7 @@ export default function CategoryForm({ onClose, existingCategory }: Props) {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     const [categoryName, setCategoryName] = useState("");
     const [categoryDescription, setCategoryDescription] = useState("");
+    const [image, setImage] = useState<File | null>(null);
 
     useEffect(() => {
         if (existingCategory) {
@@ -26,16 +28,21 @@ export default function CategoryForm({ onClose, existingCategory }: Props) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const formData = new FormData();
+        formData.append("categoryName", categoryName);
+        formData.append("categoryDescription", categoryDescription);
+        if (image) {
+            formData.append("categoryImage", image); // fieldname حسب multer في الباك
+        }
+
         try {
             if (existingCategory) {
-                await axios.put(`${backendURL}/categories/updateCategory/${existingCategory._id}`, {
-                    categoryName,
-                    categoryDescription,
+                await axios.put(`${backendURL}/categories/updateCategory/${existingCategory._id}`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
                 });
             } else {
-                await axios.post(`${backendURL}/categories/addCategory`, {
-                    categoryName,
-                    categoryDescription,
+                await axios.post(`${backendURL}/categories/addCategory`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
                 });
             }
 
@@ -73,6 +80,16 @@ export default function CategoryForm({ onClose, existingCategory }: Props) {
                                 rows={3}
                                 value={categoryDescription}
                                 onChange={(e) => setCategoryDescription(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Upload Image</label>
+                            <input
+                                type="file"
+                                className="form-control"
+                                accept="image/*"
+                                onChange={(e) => setImage(e.target.files?.[0] || null)}
                             />
                         </div>
 

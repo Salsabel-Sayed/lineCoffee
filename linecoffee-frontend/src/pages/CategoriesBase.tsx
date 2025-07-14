@@ -43,7 +43,8 @@ function CategoriesBase() {
           {categories.map((cat) => (
             <div key={cat._id} className="col-md-4 mb-4">
               <div className="oneSide">
-                <img src={cat.image || "/images/cup-20.webp"} alt={cat.categoryName} />
+                <img src={`${backendURL}/${cat.image?.replace(/^\/+/, "") || "images/cup-20.webp"}`} />
+
                 <div className="bodyCard">
                   <h4>{cat.categoryName}</h4>
                   <p>
