@@ -10,7 +10,7 @@ import { CoinsDocument } from "../Coins/coins.model";
       email: string;
       password: string;
       userPhone: string;
-      address:string;
+      address: string;
       coins?: Types.ObjectId | CoinsDocument; // 🪙 عدد الكوينز اللي عند المستخدم
       coupons: {
         couponId: Types.ObjectId;
@@ -24,6 +24,7 @@ import { CoinsDocument } from "../Coins/coins.model";
       logging: boolean;
       createdAt?: Date;
       currentDiscounts: any;
+      playerId?: string;
     }
 
     // إنشاء مخطط Mongoose مع تحديد الأنواع
@@ -37,8 +38,7 @@ import { CoinsDocument } from "../Coins/coins.model";
           required: true,
           match: /^01[0125][0-9]{8}$/,
         },
-        address: {type:String,
-          required:true},
+        address: { type: String, required: true },
         coins: { type: Schema.Types.ObjectId, ref: 'Coins' },
         coupons: [
           {
@@ -70,6 +70,7 @@ import { CoinsDocument } from "../Coins/coins.model";
           type: Schema.Types.ObjectId,
           ref: "Wallet",
         },
+        playerId: { type: String },
         logging: {
           type: Boolean,
           default: false,

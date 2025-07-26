@@ -5,9 +5,36 @@ import { Notification } from "./notification.model";
 import { Types } from "mongoose";
 import { AppError } from "../../middlewares/errors/appError";
 import { User } from "../Users/users.models";
+import OneSignal from 'onesignal-node';
 
+const oneSignalClient = new OneSignal.Client(
+  process.env.ONESIGNAL_APP_ID!,
+  process.env.ONESIGNAL_REST_API_KEY!
+);
 
+export const sendNotifications = async (
+  userId: string | Types.ObjectId,
+  title: string,
+  message: string,
+  type: "order" | "coins" | "promo" | "general"
+) => {
+  // 1. احفظ الرسالة في DB كالمعتاد
+  await Notification.create({ user: userId, title, message, type });
 
+  // 2. هات playerId بتاع اليوزر من قاعدة البيانات
+  const user = await User.findById(userId);
+  if (!user?.playerId) {
+    console.log("No OneSignal playerId for user");
+    return;
+  }
+
+  // 3. ابعت النوتفكيشن فعلاً
+  await oneSignalClient.createNotification({
+    contents: { en: message },
+    headings: { en: title },
+    include_player_ids: [user.playerId], // أو include_external_user_ids لو هتربطي userId بالـ OneSignal
+  });
+};
 
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
 //? send Notification

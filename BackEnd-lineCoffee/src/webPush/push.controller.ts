@@ -9,11 +9,17 @@ webpush.setVapidDetails(
   process.env.VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
 );
-
 export const saveSubscription = async (req: Request, res: Response) => {
   const subscription = req.body;
-  await subscription.create(subscription);
-  res.status(201).json({ message: "Subscription saved" });
+
+  try {
+    await Subscription.create(subscription); // ✅ كده صح
+    console.log("✅ Subscription saved:", subscription);
+    res.status(201).json({ message: "Subscription saved" });
+  } catch (error) {
+    console.error("❌ Error saving subscription:", error);
+    res.status(500).json({ message: "Error saving subscription" });
+  }
 };
 
 export const sendNotification = async (req: Request, res: Response) => {

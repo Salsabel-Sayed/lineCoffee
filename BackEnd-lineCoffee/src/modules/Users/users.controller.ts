@@ -374,3 +374,29 @@ export const adminDeleteUser = catchError(
     res.json({ message: "User deleted by admin", deleted });
   }
 );
+//* ////////////////////////////////////////////////////////////////////////////////////////////////////
+//? one signal (admin)
+export const oneSignal = catchError(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction):Promise<any> => {
+    try {
+      const userId = req.user?.userId; 
+      const { playerId } = req.body;
+
+      if (!playerId)
+        return res.status(400).json({ message: "Missing playerId" });
+
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { playerId },
+        { new: true }
+      );
+
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      res.status(200).json({ message: "playerId updated", user });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
