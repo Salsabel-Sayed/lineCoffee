@@ -3,6 +3,7 @@ import { useEffect } from "react";
 const PUBLIC_KEY = "BIsgFsq4-lmlf924Nx5o9T_MWyyhrDLRMkVaoQTUjadCF1AS7QRbyTK3--RK1MfOzv9oJ0bP7p-C-0gKqhGtfQg"; // نفس الـ public key اللي طلعناها فوق
 
 function urlBase64ToUint8Array(base64String: string) {
+    
     const padding = "=".repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
         .replace(/-/g, "+")
@@ -13,6 +14,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export default function NotificationSetup() {
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
         if ("serviceWorker" in navigator && "PushManager" in window) {
             navigator.serviceWorker.register("/service-worker.js").then((reg) => {
@@ -25,7 +27,7 @@ export default function NotificationSetup() {
                             })
                             .then((subscription) => {
                                 // ابعتي الاشتراك للباك
-                                fetch("http://localhost:5000/api/notifications/subscribe", {
+                                fetch(`${backendURL}/api/notifications/subscribe`, {
                                     method: "POST",
                                     body: JSON.stringify(subscription),
                                     headers: {
