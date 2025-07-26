@@ -18,5 +18,6 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
       body: JSON.stringify(subscription),
       headers: { 'Content-Type': 'application/json' },
     });
+    
   }
 };
