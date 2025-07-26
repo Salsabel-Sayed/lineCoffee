@@ -29,13 +29,61 @@ import { useEffect } from 'react'
 import NotificationSetup from './assets/WebPushNote/noteSetup'
 
 
+interface OneSignalType {
+  push: (...args: unknown[]) => void;
+  init: (options: {
+    appId: string;
+    notifyButton?: { enable: boolean };
+    safari_web_id?: string;
+    [key: string]: unknown;
+  }) => void;
+  on: (event: "subscriptionChange", callback: (isSubscribed: boolean) => void) => void;
+  getUserId: () => Promise<string | null>;
+}
 
+declare global {
+  interface Window {
+    OneSignal: OneSignalType;
+  }
+}
+
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+const initOneSignal = () => {
+  window.OneSignal = window.OneSignal || [];
+  window.OneSignal.push(function () {
+    window.OneSignal.init({
+      appId: "YOUR-ONESIGNAL-APP-ID", // استبدليه بتاعك
+    });
+
+    // بعد ما يتفعل، خدي الـ playerId
+    window.OneSignal.on('subscriptionChange', async function (isSubscribed: boolean) {
+      if (isSubscribed) {
+        const playerId = await window.OneSignal.getUserId();
+        console.log("playerId: ", playerId);
+
+        // ابعتيه للباك اند
+        fetch(`${backendURL}/api/user/playerId`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("linecoffeeToken")}`
+          },
+          body: JSON.stringify({ playerId }),
+        });
+      }
+    });
+  });
+};
 
 
 
 
 function App() {
   const { i18n } = useTranslation();
+  useEffect(() => {
+    initOneSignal();
+  }, []);
 
   useEffect(() => {
     const dir = i18n.language === "ar" ? "rtl" : "ltr";
