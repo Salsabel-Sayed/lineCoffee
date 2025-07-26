@@ -22,10 +22,13 @@ interface IOrder extends Document {
   user: Schema.Types.ObjectId;
   items: { product: Schema.Types.ObjectId; quantity: number }[];
   totalAmount: number;
+  code:string;
   discount?: number;
   finalAmount: number;
   coinsEarned: number;
-  coupon?: any; // ← بقت optional
+  shippingAddress: string;
+  extraAddress: string;
+  coupon?: any;
   walletAmount?: number;
   paymentMethod?: string; // ← كمان خلتها optional زي ما انت كاتب في schema
   status:
@@ -48,6 +51,11 @@ interface IOrder extends Document {
 const OrderSchema = new Schema<IOrder>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    code: {
+  type: String,
+  required: true,
+  unique: true,
+},
     items: [
       {
         product: {
@@ -56,6 +64,7 @@ const OrderSchema = new Schema<IOrder>(
           required: true,
         },
         quantity: { type: Number, required: true, min: 1 },
+        price: { type: Number, required: true, min: 0 },
       },
     ],
     totalAmount: { type: Number, required: true },
@@ -63,7 +72,15 @@ const OrderSchema = new Schema<IOrder>(
     finalAmount: { type: Number, required: true },
     coinsEarned: { type: Number, default: 0 },
     coupon: { type: Schema.Types.ObjectId, ref: "Coupon", default: null },
-    walletAmount: { type: Number, default: 0 }, // ← إضافته هنا
+    walletAmount: { type: Number, default: 0 },
+    shippingAddress: {
+      type: String,
+      required: true,
+    },
+    extraAddress: {
+      type: String,
+    },
+
     paymentMethod: {
       type: String,
       enum: ["vodafone", "cash", "insta"],

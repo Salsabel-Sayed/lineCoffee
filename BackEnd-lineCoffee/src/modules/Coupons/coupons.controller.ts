@@ -28,6 +28,7 @@ export const createCoupon = catchError(
     }
 
     try {
+      // 1️⃣ أنشئ الكوبون الجديد
       const newCoupon = await Coupon.create({
         couponCode,
         discountPercentage,
@@ -35,43 +36,45 @@ export const createCoupon = catchError(
         userId: userId || null,
       });
 
+      // 2️⃣ لو userId موجود، ابعت الكوبون له فقط
       if (userId) {
-        // كوبون خاص: اربطه باليوزر
-        const user = await User.findById(userId);
-        if (user) {
-          user.currentDiscounts.push({
-            couponCode,
-            discountPercentage,
-            expiresAt,
-          });
-          user.coupons.push({
-            couponId: newCoupon._id as Types.ObjectId,
-            used: false,
-          });
-          
-          await user.save();
-        }
+        await User.findByIdAndUpdate(userId, {
+          $push: {
+            currentDiscounts: {
+              couponCode,
+              discountPercentage,
+              expiresAt,
+            },
+            coupons: {
+              couponId: newCoupon._id,
+              used: false,
+            },
+          },
+        });
       } else {
-        // كوبون عام: ابعت إشعار لكل المستخدمين
-        const allUsers = await User.find();
-        for (const user of allUsers) {
-          user.currentDiscounts.push({
-            couponCode,
-            discountPercentage,
-            expiresAt,
-          });
-          user.coupons.push({
-            couponId: newCoupon._id as Types.ObjectId,
-            used: false,
-          });
-          await user.save();
-        }
+        // 3️⃣ كوبون عام: ابعته لكل اليوزرز باستخدام bulk update
+        await User.updateMany(
+          {},
+          {
+            $push: {
+              currentDiscounts: {
+                couponCode,
+                discountPercentage,
+                expiresAt,
+              },
+              coupons: {
+                couponId: newCoupon._id,
+                used: false,
+              },
+            },
+          }
+        );
       }
 
-      res
-        .status(201)
-        .json({ message: "Coupon created successfully", coupon: newCoupon });
-
+      res.status(201).json({
+        message: "Coupon created successfully",
+        coupon: newCoupon,
+      });
     } catch (error: any) {
       if (error.code === 11000) {
         return next(new AppError("Coupon code already exists!", 400));
@@ -146,9 +149,9 @@ export const generateFirstOrderCoupon = catchError(async (req: AuthenticatedRequ
       expiresAt: newCoupon.expiresAt,
     });
     user.coupons.push({
-            couponId: newCoupon._id as Types.ObjectId,
-            used: false,
-          });
+      couponId: newCoupon._id as Types.ObjectId,
+      used: false,
+    });
     await user.save();
   }
 
@@ -179,9 +182,9 @@ export const generateSecondOrderCoupon = catchError(async (req: AuthenticatedReq
       expiresAt: newCoupon.expiresAt,
     });
     user.coupons.push({
-            couponId: newCoupon._id as Types.ObjectId,
-            used: false,
-          });
+      couponId: newCoupon._id as Types.ObjectId,
+      used: false,
+    });
     await user.save();
   }
 
@@ -230,7 +233,7 @@ export const validateCoupon = catchError(
     const coupon = (await Coupon.findOne({
       couponCode,
       isActive: true,
-      isUsed: false, // لو انتي بتعلميه مستخدم على مستوى الكل، مش اليوزر بس
+      isUsed: false,
     })) as { _id: Types.ObjectId; discountPercentage: number };;
 
     if (!coupon) {
@@ -246,10 +249,14 @@ export const validateCoupon = catchError(
       return next(new AppError("User not found!", 404));
     }
 
-    const hasUsedCoupon = user.coupons.some(
-      (entry) =>
-        entry.couponId.toString() === coupon._id.toString() && entry.used
-    );
+    const hasUsedCoupon = user.coupons.some((entry) => {
+  return (
+    entry.couponId &&
+    entry.couponId.toString() === coupon._id.toString() &&
+    entry.used
+  );
+});
+
 
     if (hasUsedCoupon) {
       return void res.status(200).json({

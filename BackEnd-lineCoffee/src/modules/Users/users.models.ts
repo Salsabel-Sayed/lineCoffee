@@ -37,7 +37,8 @@ import { CoinsDocument } from "../Coins/coins.model";
           required: true,
           match: /^01[0125][0-9]{8}$/,
         },
-        address: String,
+        address: {type:String,
+          required:true},
         coins: { type: Schema.Types.ObjectId, ref: 'Coins' },
         coupons: [
           {
@@ -45,8 +46,13 @@ import { CoinsDocument } from "../Coins/coins.model";
               type: Schema.Types.ObjectId,
               ref: "Coupon",
             },
-            used: Boolean,
-            usedAt: Date,
+            used: {
+              type: Boolean,
+              default: false,
+            },
+            usedAt: {
+              type: Date,
+            },
           },
         ],
         firstLoginCouponUsed: { type: Boolean, default: false },

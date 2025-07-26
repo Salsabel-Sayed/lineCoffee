@@ -27,7 +27,10 @@ export const registerSchema = Joi.object({
       "string.pattern.base": "Phone number must be a valid Egyptian number",
       "any.required": "Phone number is required",
     }),
-  address: Joi.string().allow('').optional(),
+  address: Joi.string().min(5).required().messages({
+    "string.empty": "Address is required",
+    "string.min": "Address must be at least 5 characters",
+  }),
 });
 
 export const loginSchema = Joi.object({

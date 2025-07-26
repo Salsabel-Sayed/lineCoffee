@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { verifyToken } from './../../middlewares/token/token';
-import { adminUpdateOrder, AdminUpdateOrderStatus, cancelOrder, completeOrder, createOrder, getAllOrders, getOrderById, getUserOrders, updateOrder } from "./order.controller";
+import { adminUpdateOrder, AdminUpdateOrderStatus, cancelOrder, getAllOrders, getOrderById, getUserOrders, placeOrder, updateOrder } from "./order.controller";
 
 
 
 
 const orderRouter = Router()
 
-orderRouter.post('/createOrder',verifyToken,createOrder);
-orderRouter.put('/completeOrder/:orderId', verifyToken, completeOrder);
+// orderRouter.post('/createOrder',verifyToken,createOrder);
+// orderRouter.put('/completeOrder/:orderId', verifyToken, completeOrder);
+orderRouter.post('/placeOrder', verifyToken, placeOrder);
 
 orderRouter.get('/myOrders', verifyToken, getUserOrders);
 

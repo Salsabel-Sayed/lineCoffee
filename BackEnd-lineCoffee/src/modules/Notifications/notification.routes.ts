@@ -8,7 +8,11 @@ import { adminSendNotification, broadcastNotification, deleteNotification, editN
 const notificationRouter = Router()
 
 notificationRouter.get('/getUserNotifications',verifyToken,getUserNotifications);
-notificationRouter.patch('/:notificationId/read',verifyToken,markNotificationAsRead)
+notificationRouter.patch(
+  '/markReportAsRead/:notificationId/',
+  verifyToken,
+  markNotificationAsRead
+);
 notificationRouter.post('/adminSendNotification',verifyToken,adminSendNotification)
 notificationRouter.get('/adminGetNotifications', verifyToken, getAllNotifications);
 notificationRouter.delete('/:notificationId', verifyToken, deleteNotification);

@@ -116,10 +116,11 @@ export const redeemCoins = catchError(
     });
 
     // إشعار للمستخدم
+      // Send notification
     await sendNotification(
-      String(user._id),
-      "Coins Redeemed!",
-      `You've successfully redeemed ${coinsToRedeem} coins and received ${amount} EGP in your wallet.`,
+      String(userId),
+      "coins to money!",
+      `You have successfully converted ${amount} coins into money in your wallet.`,
       "coins"
     );
 

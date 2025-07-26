@@ -19,9 +19,11 @@ export const createCategory = catchError(
     };
 
     // ✅ حفظ الصورة
-    if (req.file) {
-      categoryData.image = `categories/${req.file.filename}`;
-    }
+ if (req.file) {
+   const imageUrl = `/uploads/${req.file.filename}`;
+   categoryData.image = imageUrl;
+ }
+
 
     const category = await Categories.create(categoryData);
 
@@ -67,11 +69,17 @@ export const updateCategory = catchError(
     if (req.file) {
       // حذف الصورة القديمة لو موجودة
       if (existingCategory.image) {
-        const oldImagePath = path.join("uploads", existingCategory.image);
+        const oldImagePath = path.join(
+          "uploads",
+          path.basename(existingCategory.image)
+        );
+
         if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
       }
 
-      updatedData.image = `categories/${req.file.filename}`;
+      updatedData.image = `/uploads/${req.file.filename}`;
+
+
     }
 
     const category = await Categories.findByIdAndUpdate(

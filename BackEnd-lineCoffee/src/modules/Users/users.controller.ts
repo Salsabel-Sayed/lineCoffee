@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthenticatedRequest } from "../../types/custom";
 import { IWallet, Wallet } from "../Wallet/wallet.model";
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 import { Coins } from "../Coins/coins.model";
 
 
@@ -55,12 +55,15 @@ export const loginUser = catchError(async (req: Request, res: Response, next: Ne
 
 
   const userExist = await User.findOne({ email });
-  if (!userExist) return next(new AppError("User not found", 404));
+  // if (!userExist) return next(new AppError("User not found", 404));
 
-  const isPasswordValid = await bcrypt.compare(password, userExist.password);
-  if (!isPasswordValid) return next(new AppError("Invalid password!", 404));
+  // const isPasswordValid = await bcrypt.compare(password, userExist.password);
+  // if (!isPasswordValid) return next(new AppError("Invalid password!", 404));
 
-  if (userExist.email !== email) return next(new AppError("Invalid email or password!", 404));
+  if (!userExist || !(await bcrypt.compare(password, userExist.password))) {
+    return next(new AppError("Invalid email or password!", 404));
+  }
+
 
   const activeState = await User.updateOne({ _id: userExist._id }, { logging: true, firstLoginCouponUsed: true }  );
   console.log("activeState", activeState);
@@ -74,7 +77,7 @@ export const loginUser = catchError(async (req: Request, res: Response, next: Ne
       logging: userExist.logging,
     },
     secretKey,
-    { expiresIn: "3d" }
+    { expiresIn: "1d" }
   );
   if (userExist.coins && !(userExist.coins instanceof Types.ObjectId)) {
     userExist.coins = undefined; // أو null لو بتحبي
@@ -255,15 +258,19 @@ export const finduserInfo = catchError(async(req:AuthenticatedRequest, res:Respo
       return next(new AppError("params Unauthorized access!", 401));
     }
     console.log("userId", userId);
-    const findUser = await User.findById(userId);
+    const findUser = await User.findById(userId)
+      .populate("coupons.couponId") // ⬅️ نجيب تفاصيل الكوبونات
+      .populate("wallet")
+      .populate("coins");
+      
     if (!findUser) {
         return next(new AppError("User not found!", 404));
     }
     console.log('findUser', findUser);
     res.json({
       message: "Login successful",
+
       user: {
-        
         _id: findUser._id,
         email: findUser.email,
         userName: findUser.userName,
@@ -271,7 +278,7 @@ export const finduserInfo = catchError(async(req:AuthenticatedRequest, res:Respo
         wallet: findUser.wallet,
         coins: findUser.coins,
         address: findUser.address,
-        // أي حاجة تانية محتاجاها
+        coupons: findUser.coupons, // ⬅️ دي فيها الكوبونات المستعملة والغير مستعملة
       },
     });
       
@@ -287,7 +294,8 @@ export const getAllUsers = catchError(async (req: AuthenticatedRequest, res: Res
     }
     const users = await User.find()
       .populate({ path: "coins", select: "coins" })
-      .populate({ path: "wallet", select: "balance" });
+      .populate({ path: "wallet", select: "balance" })
+      .populate("coupons.couponId"); ;
 
     console.log(
       "USERS WITH COINS:",

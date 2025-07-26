@@ -69,7 +69,6 @@ export const adminSendNotification = catchError(async (req: AuthenticatedRequest
 })
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
 //?  Get all notifications (admin)
-
 export const getAllNotifications = catchError(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const notifications = await Notification.find()

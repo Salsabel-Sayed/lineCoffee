@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { verifyToken } from './../../middlewares/token/token';
-import { deleteCoupon, generateFirstOrderCoupon, generateSecondOrderCoupon, getAllCoupons, getCouponById, updateCoupon, validateCoupon } from "./coupons.controller";
-import { checkAdmin } from "../../middlewares/verifyAdmin/roleAdmin";
-import { createCoupon } from "../Admins/Coupons.controller";
+import { createCoupon, deleteCoupon, generateFirstOrderCoupon, generateSecondOrderCoupon, getAllCoupons, getCouponById, updateCoupon, validateCoupon } from "./coupons.controller";
+
 
 
 
@@ -15,10 +14,10 @@ CouponsRouter.post('/SecondOrCo',generateSecondOrderCoupon)
 CouponsRouter.post('/validateCoupon/', verifyToken,validateCoupon);
 
 // CRUD
-CouponsRouter.post("/addCoupons",verifyToken,checkAdmin, createCoupon);
-CouponsRouter.get("/getAllCoupons", getAllCoupons);
-CouponsRouter.get("/getCouponById/:id", getCouponById);
-CouponsRouter.put("/updateCoupon/:id", verifyToken, updateCoupon);
+CouponsRouter.post("/addCoupons",verifyToken, createCoupon);
+CouponsRouter.get("/getAllCoupons", verifyToken, getAllCoupons);
+CouponsRouter.get("/getCouponById/:id", verifyToken, getCouponById);
+CouponsRouter.put("/updateCoupon/:id", verifyToken, verifyToken, updateCoupon);
 CouponsRouter.delete("/deleteCoupon/:id", verifyToken, deleteCoupon);
 
 export default CouponsRouter

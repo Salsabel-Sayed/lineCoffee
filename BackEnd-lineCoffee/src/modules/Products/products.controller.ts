@@ -11,59 +11,60 @@ import path from "path";
 
 
 //? create products
-export const createProduct = catchError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const {
-      productsName,
-      productsDescription,
-      price,
-      category,
-      available,
-      inStock,
-    } = req.body;
-    console.log(req.body);
-    
+  export const createProduct = catchError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const {
+        productsName,
+        productsDescription,
+        price,
+        category,
+        available,
+        inStock,
+      } = req.body;
+      console.log(req.body);
+      
 
-    const categoryId = new mongoose.Types.ObjectId(category);
-    console.log("caregoryId",categoryId);
-    console.log("All Categories:", await Categories.find());
+      const categoryId = new mongoose.Types.ObjectId(category);
+      console.log("caregoryId",categoryId);
+      console.log("All Categories:", await Categories.find());
 
-    
-    const existingCategory = await Categories.findById(categoryId);
-    console.log("existingCategory", existingCategory);
-    if (!existingCategory)
-      return next(new AppError("Category not found!", 404));
+      
+      const existingCategory = await Categories.findById(categoryId);
+      console.log("existingCategory", existingCategory);
+      if (!existingCategory)
+        return next(new AppError("Category not found!", 404));
 
-    // الصورة من multer
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    console.log("imageUrl", imageUrl);
-    
+      // الصورة من multer
+      const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
-    const product = await Products.create({
-      productsName,
-      productsDescription,
-      price,
-      category: categoryId,
-      imageUrl,
-      available,
-      ratings: [],
-      averageRating: 0,
-      inStock,
-    });
-    console.log("Body Data:");
-    console.log("productsName:", productsName);
-    console.log("productsDescription:", productsDescription);
-    console.log("price:", price);
-    console.log("category:", category);
-    console.log("available:", available);
-    console.log("inStock:", inStock);
+      console.log("imageUrl", imageUrl);
+      
 
-    console.log("product", product);
-    
+      const product = await Products.create({
+        productsName,
+        productsDescription,
+        price,
+        category: categoryId,
+        imageUrl,
+        available,
+        ratings: [],
+        averageRating: 0,
+        inStock,
+      });
+      console.log("Body Data:");
+      console.log("productsName:", productsName);
+      console.log("productsDescription:", productsDescription);
+      console.log("price:", price);
+      console.log("category:", category);
+      console.log("available:", available);
+      console.log("inStock:", inStock);
 
-    res.status(201).json({ message: "Product created successfully!", product });
-  }
-);
+      console.log("product", product);
+      
+
+      res.status(201).json({ message: "Product created successfully!", product });
+    }
+  );
 
 
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,21 +164,21 @@ export const updateProduct = catchError(
     product.category = req.body.category || product.category;
 
     // If there's a new image, handle it
-    if (req.file) {
-      // احذف الصورة القديمة من السيرفر لو كانت موجودة
-      if (product.imageUrl) {
-        const oldImagePath = path.join(
-          __dirname,
-          `../../uploads/${path.basename(product.imageUrl)}`
-        );
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
+if (req.file) {
+  // حذف الصورة القديمة
+  if (product.imageUrl) {
+   const oldImagePath = path.join("uploads", path.basename(product.imageUrl));
 
-      // حدث الصورة الجديدة
-      product.imageUrl = `/uploads/${req.file.filename}`;
+    if (fs.existsSync(oldImagePath)) {
+      fs.unlinkSync(oldImagePath);
     }
+  }
+
+  // تحديث الصورة الجديدة
+  product.imageUrl = `/uploads/${req.file.filename}`;
+
+}
+
 
     await product.save();
 
