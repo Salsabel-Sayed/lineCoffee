@@ -4,22 +4,76 @@
         "home": "Home",
         "logo": "line coffee",
         "language": "عربية",
-        "profile": "your profile"
+        "profile": "your profile",
+        "contact": "contact us"
     },
     "home": {
-        "title": "Welcome to Our Store",
-        "welcomeMessage": "Discover the best products at unbeatable prices."
+        "welcomeMessage1": "At Line Coffee,",
+        "welcomeMessage2": "we don`t just serve coffee",
+        "welcomeMessage3": "we serve an experience full of rich aromas,",
+        "welcomeMessage4": "bold flavors, and unforgettable moments."
     },
-    "product":{
-        "products_title": "Our Products",
-        "description": "what product about",
-        "add_to_cart": "Add to Cart",
-        "turkish_coffee": "Turkish Coffee",
-        "turkish_desc": "Fresh high-quality beans",
-        "latte": "Latte",
-        "latte_desc": "Light vanilla flavor",
-        "egp": "EGP",
-        "price": "200.0",
-        "priceBefore": "400.0"
+
+    "coins":{
+        "coins_title": "how to get...",
+        "coins_Des": "how to get coins, coupons and, money back after buying our peoducts"
+    },
+    "notifications": {
+        "coinsMessage": "You earned {{count}} coins for {{action}}.",
+        "orderMessage": "Your order {{orderCode}} has been confirmed.",
+        "promoMessage": "You got a new discount of {{discount}}%!"
+        },
+        "categories": {
+            "french coffee": "french coffee",
+            "nescafe": "nescafe",
+            "coffee mate": "coffee mate",
+            "turkish coffee": "turkish coffee",
+            "cappuccino": "cappuccino",
+            "hot chocolate": "hot chocolate",
+            "herbal coffee": "herbal coffee"
+
+        },
+        "product": {
+            "Classic French Coffee": "Classic French Coffee",
+            "hazelnut coffee": "hazelnut coffee",
+            "Apple hookah flavored coffee": "Apple hookah flavored coffee",
+            "chocolate coffee": "chocolate coffee",
+            "cappuccino": "cappuccino",
+            "Caramel flavored coffee": "Caramel flavored coffee",
+            "vanilla flavored coffee": "vanilla flavored coffee",
+            "Mocha flavored coffee": "Mocha flavored coffee",
+            "Lotus flavored coffee": "Lotus flavored coffee",
+            "Pistachio-flavored coffee": "Pistachio-flavored coffee",
+            "Almond-flavored coffee": "Almond-flavored coffee",
+            "Fruit-flavored coffee": "Fruit-flavored coffee",
+            "Nescafe Classic": "Nescafe Classic",
+            "Nescafe Gold": "Nescafe Gold",
+            "Nescafe_2_in_1": "Nescafe 2 in 1",
+            "Nescafe 3 in 1": "Nescafe 3 in 1",
+            "Nescafe 2 in 1 Hazelnut-flavored coffee": "Nescafe 2 in 1 Hazelnut-flavored coffee",
+            "Nescafe 2 in 1 Mocha-flavored coffee": "Nescafe 2 in 1 Mocha-flavored coffee",
+            "Nescafe 2 in 1 Chocolate-flavored coffee": "Nescafe 2 in 1 Chocolate-flavored coffee",
+            "Nescafe 2 in 1 Lotus-flavored coffee": "Nescafe 2 in 1 Lotus-flavored coffee",
+            "Nescafe 2 in 1 Apple-flavored shisha coffee": "Nescafe 2 in 1 Apple-flavored shisha coffee",
+            "Coconut Coffee Mate": "Coconut Coffee Mate",
+            "Plain Coffee": "Plain Coffee",
+            "mixed Coffee": "mixed Coffee",
+            "Special Black Coffee": "Special Black Coffee",
+            "Special Mixed Coffee": "Special Mixed Coffee",
+            "Espresso Beans Whole": "Espresso Beans Whole",
+           "Ground Espresso Beans": "Ground Espresso Beans",
+        "American Coffee Beans Gravel": "American Coffee Beans Gravel",
+        "American Coffee Beans Ground": "American Coffee Beans Ground",
+            "Classic Cappuccino": "Classic Cappuccino",
+            "Cappuccino With hazelnut": "Cappuccino With hazelnut",
+            "Cappuccino with mocha": "Cappuccino with mocha",
+            "Cappuccino with chocolate": "Cappuccino with chocolate",
+            "Cappuccino with Vanilla": "Cappuccino with Vanilla",
+            "Cappuccino with latte": "Cappuccino with latte",
+            "Cappuccino with caramel": "Cappuccino with caramel",
+            "Fruit-flavored Cappuccino": "Fruit-flavored Cappuccino",
+            "Classic Hot Chocolate": "Classic Hot Chocolate",
+            "Hot Chocolate With Hazelnut": "Hot Chocolate With Hazelnut",
+            "Korean Ginseng Coffee": "Korean Ginseng Coffee"
+        }
     }
-}

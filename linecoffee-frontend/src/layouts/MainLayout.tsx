@@ -4,9 +4,10 @@ import Footer from "../pages/Footer";
 
 
 function MainLayout() {
+
   return (  
           <>
-              <NavBar />
+          <NavBar />
       <main >
                   <Outlet />
         <Footer />

@@ -33,7 +33,7 @@ function CategoriesBase() {
 
 
   return (
-    <section id="categoriesBase" className="glass-section">
+    <section id="categoriesBase" >
       <div className="container">
         <div className="addrs">
           <h1>{t("home.seeMore")}</h1>
@@ -43,7 +43,7 @@ function CategoriesBase() {
           {categories.map((cat) => (
             <div key={cat._id} className="col-md-4 mb-4">
               <div className="oneSide">
-                <img src={`${backendURL}/${cat.image?.replace(/^\/+/, "") || "images/cup-20.webp"}`} />
+                <img crossOrigin="anonymous" src={`${backendURL}/${cat.image?.replace(/^\/+/, "") || "images/cup-20.webp"}`} />
 
                 <div className="bodyCard">
                   <h4>{cat.categoryName}</h4>

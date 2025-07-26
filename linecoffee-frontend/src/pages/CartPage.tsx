@@ -108,7 +108,7 @@ export default function CartPage() {
                                                     alert(res.data.message || "Invalid coupon");
                                                 }
                                             } catch (err) {
-                                                console.error("Error applying coupon:", err);
+                                                console.log("Error applying coupon:", err);
                                             }
                                         }}
                                     >

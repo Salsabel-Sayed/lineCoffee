@@ -5,7 +5,6 @@ import Home from './pages/Home'
 import ProductDetails from './pages/ProductDetails'
 import { LanguageProvider } from './Providers/LangugeProvider'
 import './Styles/customStyles.css';
-// import ProductsBase from './pages/ProductsBase'
 import UserProfile from './pages/UserProfile'
 import ProductsPage from './pages/ProductPage'
 import Register from './pages/Register'
@@ -13,8 +12,8 @@ import Login from './pages/Login'
 import { CartProvider } from './context/CartContext';
 import { WishListProvider } from './context/WishListContext';
 import WishListPage from './pages/WishListPage'
-import CartPage from './pages/CartPage'
-import ConfirmOrderPage from './pages/OrderConfimation';
+// import CartPage from './pages/CartPage'
+// import ConfirmOrderPage from './pages/OrderConfimation';
 import AdminLayout from './pages/Admin/AdminLayout';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,51 +22,60 @@ import AdminProductsDash from './pages/Admin/Products/AdminProductDash'
 import PaymentsSection from './pages/Admin/Payments/PaymentsSection'
 import NotificationWrapper from './pages/NotificationWarapper'
 import AdminEditProduct from './pages/Admin/Products/ِAdminEditProduct'
+import CheckoutPage from './pages/CheckoutPage'
+import MainLayout from './layouts/MainLayout'
+import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'
+import NotificationSetup from './assets/WebPushNote/noteSetup'
+
+
 
 
 
 
 
 function App() {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const dir = i18n.language === "ar" ? "rtl" : "ltr";
+    document.documentElement.setAttribute("dir", dir);
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
+
   return (
     <>
-     
+      <NotificationSetup />
       <ToastContainer />
         <LanguageProvider>
         <WishListProvider>
           <CartProvider>
           <BrowserRouter>
         <MainNavbar />
-        <div>
-          <Routes>
-              <Route path="/" element={<Home />} />
-              {/* <Route path="/" element={<ProductsBase />} /> */}
-              {/* <Route path="/products" element={<ProductsList />} /> */}
-              <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/product/:productId" element={<ProductDetails />} />
-                  <Route path="/profile/" element={<UserProfile />} />
-                  <Route path="/profile/notifications" element={<NotificationWrapper />} />
+              <div id="appsWar">
+                <Routes>
+            
+                  <Route element={<MainLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/products" element={<ProductsPage />} />
+                    <Route path="/product/:productId" element={<ProductDetails />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/profile" element={<UserProfile />} />
+                    <Route path="/profile/notifications" element={<NotificationWrapper />} />
+                    <Route path="/wishlist" element={<WishListPage />} />
+                    <Route path="/cart" element={<CheckoutPage />} />
+                  </Route>
 
+                    {/* admin */}
+                    <Route path="/admin/" element={<AdminLayout />} />
+                    <Route path="/admin/products" element={<AdminProductsDash />} />
+                    <Route path="/admin/add-product" element={<ProductForm onBack={() => window.history.back()} />} />
+                    <Route path="/admin/edit-product/:productId" element={<AdminEditProduct />} />
+                    <Route path="/admin/payments" element={<PaymentsSection />} />
+                  
+                </Routes>
 
-
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-                  <Route path="/wishlist" element={<WishListPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/confirm-order" element={<ConfirmOrderPage />} />
-                  <Route path="/admin/payments" element={<PaymentsSection />} />
-
-                  {/*admin routes*/}
-                   <Route path="/admin/" element={<AdminLayout />} />
-                  <Route path="/admin/products" element={<AdminProductsDash />} />
-                  <Route path="/admin/add-product" element={<ProductForm onBack={() => window.history.back()} />} />
-                  <Route path="/admin/edit-product/:productId" element={<AdminEditProduct />} />
-
-
-
-
-              
-          </Routes>
         </div>
       </BrowserRouter>
           </CartProvider>

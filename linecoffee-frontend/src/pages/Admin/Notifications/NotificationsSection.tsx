@@ -48,7 +48,7 @@ export default function NotificationsSection() {
             setBroadcast({ title: "", message: "" });
             fetchNotifications();
         } catch (err) {
-            console.error("Broadcast error:", err);
+            console.log("Broadcast error:", err);
         }
     };
 
@@ -82,7 +82,7 @@ export default function NotificationsSection() {
             });
             setNotifications(data.notifications);
         } catch (err) {
-            console.error("Error fetching notifications:", err);
+            console.log("Error fetching notifications:", err);
         }
     };
 
@@ -94,7 +94,7 @@ export default function NotificationsSection() {
             });
             fetchNotifications(); // reload
         } catch (err) {
-            console.error("Error deleting notification:", err);
+            console.log("Error deleting notification:", err);
         }
     };
     const submitNotifToUser = async () => {
@@ -112,7 +112,7 @@ export default function NotificationsSection() {
             setShowNotifModal(false);
             setNotif({ title: "", message: "", type: "general" });
         } catch (err) {
-            console.error("Failed to send:", err);
+            console.log("Failed to send:", err);
         }
     };
     
@@ -125,7 +125,7 @@ export default function NotificationsSection() {
         <div>
             <h3 className="mb-4">🔔 User Notifications</h3>
             <div className="table-responsive">
-                <table className="table table-bordered text-center">
+                <table className="table table-bordered text-center ">
                     <thead className="table-dark">
                         <tr>
                             <th>#</th>
@@ -139,7 +139,7 @@ export default function NotificationsSection() {
                     </thead>
                     <tbody>
                         {notifications.map((noti, index) => (
-                            <tr key={noti._id}>
+                            <tr className="glass-btn" key={noti._id}>
                                 <td>{index + 1}</td>
                                 <td>{noti.user?.email || "—"}</td>
                                 <td>{noti.title}</td>
@@ -147,7 +147,7 @@ export default function NotificationsSection() {
                                 <td>{noti.type}</td>
                                 <td>{new Date(noti.createdAt).toLocaleString()}</td>
                                 <td>
-                                    <button className="btn btn-sm btn-outline-primary me-2" onClick={() => openEditModal(noti)}>✏️ Edit</button>
+                                    <button className="btn btn-sm me-2" onClick={() => openEditModal(noti)}>✏️ Edit</button>
                                     <button className="btn btn-sm btn-outline-danger" onClick={() => deleteNotification(noti._id)}>🗑 Delete</button>
                                     <button className="btn btn-sm btn-outline-info"
                                         onClick={() => openSendNotificationModal(noti.user?._id)}>

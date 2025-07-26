@@ -200,7 +200,7 @@ export default function ProductDetails() {
           <p className="mt-3">{product.description}</p>
           <div className="d-flex align-items-center my-2">
             {renderStars(product.averageRating ?? 0)}
-            <span className="ms-2 text-muted">({(product.averageRating ?? 0).toFixed(1)})</span>
+            <span className="ms-2">({(product.averageRating ?? 0).toFixed(1)})</span>
           </div>
           <h4 className="fw-bold text-success mb-3">{product.price} EGP</h4>
 
@@ -222,7 +222,7 @@ export default function ProductDetails() {
       <div className="mt-5">
         <h4 className="mb-3">Customer Reviews</h4>
         {Array.isArray(reviews) && reviews.length === 0 ? (
-          <p className="text-muted">No reviews yet.</p>
+          <p className="">No reviews yet.</p>
         ) : (
           Array.isArray(reviews) &&
           reviews.map((review, index) => (
@@ -248,7 +248,7 @@ export default function ProductDetails() {
             onChange={(e) => setComment(e.target.value)}
             placeholder="اكتب تعليقك هنا..."
           />
-          <button className="btn btn-primary mt-3" onClick={handleReviewSubmit}>
+          <button className="btn glass-btn mt-3" onClick={handleReviewSubmit}>
             إرسال التقييم
           </button>
         </div>

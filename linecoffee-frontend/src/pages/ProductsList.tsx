@@ -5,6 +5,7 @@ import { useWishList } from "../context/WishListContext";
 import { toast } from "react-toastify";
 import { getDecryptedToken } from "../utils/authUtils";
 import { renderStars } from "../utils/RatingUtils";
+import { t } from "i18next";
 
 // Define Product type
 type Product = {
@@ -59,26 +60,32 @@ function ProductsList({ products }: ProductsListProps) {
                         const inWishList = wishList.some((p) => p.id === product.id);
 
                         return (
-                            <div key={product.id} className="col-6 col-md-4 col-lg-3 mb-4">
-                                <div className="card h-100 shadow-sm p-2" style={{ borderRadius: "10px" }}>
+                            <div key={product.id} className={`mb-4 ${products.length === 1
+                                    ? "col-12"
+                                    : "col-12 col-sm-6 col-lg-4"
+                                }`}>
+                                <div className="cardPro glass-effect shadow-sm p-2" style={{ borderRadius: "10px" }}>
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className="card-img-top"
+                                        className=""
                                         style={{ height: "250px", objectFit: "cover" }}
                                         crossOrigin="anonymous"
                                     />
                                     <div className="card-body">
-                                        <div className="cardTitle d-flex justify-content-around align-items-center">
-                                            <h5 className="card-title fw-bold">{product.name}</h5>
-                                            {/* <p className="card-text text-truncate">{product.description}</p> */}
-                                            <p className="card-text fw-bold text-primary">{product.price} EGP</p>
+                                        <div className="cardTitle d-flex  flex-column m-3">
+                                            <h5 className="card-title fw-bold">
+                                                {t(`product.${product.name}`, { defaultValue: product.name })}
+
+                                            </h5>
+
+                                            <p className="card-text fw-bold">{product.price} EGP</p>
                                         </div>
 
                                         {/* Render star rating */}
-                                        <div className="mb-2 d-flex align-items-center">
+                                        <div className="mb-2 d-flex align-items-center mb-4">
                                             {renderStars(product.averageRating ?? 0)}
-                                            <span className="ms-2 text-muted small">
+                                            <span className="ms-2 small">
                                                 ({(product.averageRating ?? 0).toFixed(1)})
                                             </span>
                                         </div>
@@ -86,7 +93,7 @@ function ProductsList({ products }: ProductsListProps) {
 
                                         {/* Wishlist button */}
                                         <button
-                                            className={`btn btn-sm ${inWishList ? "btn-warning" : "btn-outline-warning"} me-2`}
+                                            className={`btn btn-sm ${inWishList ? "glass-btn" : "glass-btn"} me-2`}
                                             onClick={() => handleToggleWish(product)}
                                         >
                                             {inWishList ? "★ Remove" : "☆ WishList"}
@@ -94,14 +101,14 @@ function ProductsList({ products }: ProductsListProps) {
 
                                         {/* Cart button */}
                                         <button
-                                            className="btn btn-sm btn-outline-success me-2"
+                                            className="btn btn-sm  me-2 glass-btn"
                                             onClick={() => handleAddToCart(product)}
                                         >
                                             ➕ Add to Cart
                                         </button>
 
                                         {/* View product */}
-                                        <Link to={`/product/${product.id}`} className="btn btn-sm btn-primary">
+                                        <Link to={`/product/${product.id}`} className="btn btn-sm  glass-btn">
                                             View
                                         </Link>
                                     </div>

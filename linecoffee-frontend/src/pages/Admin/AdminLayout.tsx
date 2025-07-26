@@ -8,6 +8,7 @@ import NotificationsSection from "./Notifications/NotificationsSection";
 import CategoriesList from "./Categories/CategoriesList";
 import PaymentsSection from "./Payments/PaymentsSection";
 import AdminProductList from "./Products/AdminProductsList";
+import AdminCouponsSection from "./Coupons/AdminCouponsSection";
 
 export default function AdminLayout() {
     const [activeSection, setActiveSection] = useState("products");
@@ -30,6 +31,9 @@ export default function AdminLayout() {
                 return <NotificationsSection />;
             case "payments":
                 return <PaymentsSection />;
+            case "coupons":
+                return <AdminCouponsSection />;
+
             default:
                 return <div className="text-muted">Select a section</div>;
         }
@@ -57,6 +61,12 @@ export default function AdminLayout() {
                         <li className="nav-item mb-2">
                             <button className="btn btn-outline-light w-100" onClick={() => setActiveSection("walletsCoins")}>👥 wallet and coins</button>
                         </li>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-outline-light w-100" onClick={() => setActiveSection("coupons")}>
+                                🎁 Coupons
+                            </button>
+                        </li>
+
                         <li className="nav-item mb-2">
                             <button className="btn btn-outline-light w-100" onClick={() => setActiveSection("notifications")}>👥 notifications</button>
                         </li>

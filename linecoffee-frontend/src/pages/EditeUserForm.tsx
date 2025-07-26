@@ -42,7 +42,7 @@ function EditeUserForm({ userData, onSave }: Props) {
   
 
   return (
-    <div className="edit-user-form p-4 bg-light rounded shadow">
+    <div className="edit-user-form p-4 glass-effect">
       <h3 className="mb-4">Edit Your Information</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
@@ -50,7 +50,7 @@ function EditeUserForm({ userData, onSave }: Props) {
           <input
             type="text"
             name="name"
-            className="form-control"
+            className="form-control glass-btn"
             value={formData.name}
             onChange={handleChange}
           />
@@ -61,7 +61,7 @@ function EditeUserForm({ userData, onSave }: Props) {
           <input
             type="text"
             name="address"
-            className="form-control"
+            className="form-control glass-btn"
             value={formData.address}
             onChange={handleChange}
           />
@@ -72,7 +72,7 @@ function EditeUserForm({ userData, onSave }: Props) {
           <input
             type="tel"
             name="phone"
-            className="form-control"
+            className="form-control glass-btn"
             value={formData.phone}
             onChange={handleChange}
           />
@@ -83,7 +83,7 @@ function EditeUserForm({ userData, onSave }: Props) {
           <input
             type="email"
             name="email"
-            className="form-control"
+            className="form-control glass-btn"
             value={formData.email}
             onChange={handleChange}
           />
@@ -94,7 +94,7 @@ function EditeUserForm({ userData, onSave }: Props) {
           <input
             type="password"
             name="password"
-            className="form-control"
+            className="form-control glass-btn"
             value={formData.password}
             onChange={handleChange}
           />

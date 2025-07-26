@@ -15,6 +15,8 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [userPhone, setUserPhone] = useState("");
+    const [address, setAddress] = useState("");
+
     const [errors, setErrors] = useState<{ [key: string]: string }>({}); 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -48,6 +50,7 @@ export default function Register() {
                 email,
                 password,
                 userPhone,
+                address
             });
 
             toast.success("Account created successfully!");
@@ -151,6 +154,20 @@ export default function Register() {
                         />
                         {errors.password && <div className="text-danger mt-1">{errors.password}</div>}
                     </div>
+                    <div className="mb-3">
+                        <label>Address:</label>
+                        <input
+                            type="text"
+                            className={`form-control ${errors.address ? "is-invalid" : ""}`}
+                            required
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            onBlur={(e) => validateField("address", e.target.value)}
+                            placeholder="Your full address"
+                        />
+                        {errors.address && <div className="text-danger mt-1">{errors.address}</div>}
+                    </div>
+
 
                     <button type="submit" className="btn btn-success w-100">Register</button>
                 </form>

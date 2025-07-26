@@ -9,11 +9,14 @@ import SendReportForm from "./SendReportForm";
 import EditeUserForm from "./EditeUserForm";
 import NotificationsList from './NotificationList';
 import { clearToken, getDecryptedToken } from "../utils/authUtils";
+import useAuthCheck from "../utils/Hooks/UseAuthCheck";
+import CouponsList from "./CouponsList";
 
 
 
 
 function UserProfile() {
+  useAuthCheck();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [activeTab, setActiveTab] = useState("profile");
 
@@ -57,6 +60,7 @@ function UserProfile() {
         coins: coinsRes.data.coins || 0,
         logs: coinsRes.data.logs || [],
       });
+      
 
       const walletRes = await axios.get(`${backendURL}/wallets/getUserWallet/${userId}`, { headers });
       setWallet(walletRes.data);
@@ -84,37 +88,40 @@ function UserProfile() {
       <div className="container-fluid py-5">
         <div className="row">
           {/* Sidebar */}
-          <div className="col-12 col-md-4 col-lg-3 mb-4">
-            <div className="dashSidebar p-3 bg-light rounded shadow-sm">
-              <div className="userInfo mb-4">
+          <div className="col-12 col-md-4 col-lg-3 mb-4 ">
+            <div className="dashSidebar p-3  glass-effect">
+              <div className="userInfo mb-4 glass-section">
                 <p className="mb-1">📍 {userData.name}</p>
                 <p className="mb-1">📍 {userData.address}</p>
                 <p className="mb-1">📞 {userData.phone}</p>
                 <p className="mb-1">📧 {userData.email}</p>
               </div>
-              <div className="userOpp mb-4">
-                <button onClick={() => setActiveTab("profile")} className="btn btn-outline-primary w-100 mb-2">
+              <div className="userOpp mb-4 ">
+                <button onClick={() => setActiveTab("profile")} className="btn glass-btn w-100 mb-2">
                   👤 Edit Profile
                 </button>
-                <button onClick={() => setActiveTab("orders")} className="btn btn-outline-primary w-100 mb-2">
+                <button onClick={() => setActiveTab("orders")} className="btn glass-btn w-100 mb-2">
                   🛍 Orders
                 </button>
-                <button onClick={() => setActiveTab("coins")} className="btn btn-outline-primary w-100 mb-2">
+                <button onClick={() => setActiveTab("coins")} className="btn glass-btn w-100 mb-2">
                   💰 Coins
                 </button>
-                <button onClick={() => setActiveTab("wallet")} className="btn btn-outline-primary w-100 mb-2">
+                <button onClick={() => setActiveTab("coupons")} className="btn glass-btn w-100 mb-2">
+                  👜 coupons
+                </button>
+                <button onClick={() => setActiveTab("wallet")} className="btn glass-btn w-100 mb-2">
                   👜 Wallet
                 </button>
               </div>
-              <div className="userLogs mb-4">
-                <button onClick={() => setActiveTab("notifications")} className="btn btn-outline-secondary w-100 mb-2">
+              <div className="userLogs  mb-4">
+                <button onClick={() => setActiveTab("notifications")} className="btn glass-btn w-100 mb-2">
                   🔔 Notifications
                 </button>
-                <button onClick={() => setActiveTab("sendReport")} className="btn btn-outline-secondary w-100 mb-2">
+                <button onClick={() => setActiveTab("sendReport")} className="btn glass-btn w-100 mb-2">
                   📝 Send Report
                 </button>
 
-                <button className="btn btn-danger w-100" onClick={() => {
+                <button className="btn glass-btn w-100" onClick={() => {
                   clearToken();
                   localStorage.removeItem("userId");
                   window.location.href = "/login";
@@ -125,7 +132,7 @@ function UserProfile() {
 
           {/* main page */}
           <div className="col-12 col-md-8 col-lg-9">
-            <div className="mainPage p-4 bg-white rounded shadow-sm">
+            <div className="mainPage p-4 ">
               {activeTab === "profile" && (
                 <EditeUserForm
                   userData={userData}
@@ -136,6 +143,8 @@ function UserProfile() {
               {activeTab === "orders" && <OrdersList orders={orders} />}
 
               {activeTab === "coins" && <CoinsList coins={coins} onRedeemSuccess={() => setRefreshFlag(prev => !prev)} />}
+              {activeTab === "coupons" && <CouponsList />}
+
               {activeTab === "wallet" && <Wallet balance={wallet.balance} transactions={wallet.transactions} />}
               {activeTab === "notifications" && (
                 <NotificationsList

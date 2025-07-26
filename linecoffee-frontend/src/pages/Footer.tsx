@@ -7,12 +7,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 function Footer() {
   return (
     <>
-    <footer>
-      <div className="container-fluid">
+      <footer id="footer" className="glass-section">
+        <div className="container-fluid ">
         <h1>contact us</h1>
           <div className="row align-items-start footer-content">
             <div className="col-md-4 d-flex flex-column align-items-start ">
-              <img className="logo" src="/public/images/cup-20.webp" alt="" />
+              <img className="logo" src="/public/images/2لوجو-بني-فاتح-كامل.png" alt="" />
             </div>
             <div className="col-md-4 d-flex flex-column align-items-start text-center">
               <div className="leftFooter">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 type ProductFormProps = {
@@ -7,13 +7,28 @@ type ProductFormProps = {
 
 export default function ProductForm({ onBack }: ProductFormProps) {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
+
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
     const [image, setImage] = useState<File | null>(null);
-    const [category, setCategory] = useState(""); // بقت متغيرة
-    const [available, setAvailable] = useState(true); // متغيرة
-    const [inStock, setInStock] = useState(0); 
+    const [categories, setCategories] = useState<{ _id: string; categoryName: string }[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState(""); // ✅ الجديد
+    const [available, setAvailable] = useState(true);
+    const [inStock, setInStock] = useState(0);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await axios.get(`${backendURL}/categories/getAllCategories`);
+                setCategories(res.data.categories);
+            } catch (err) {
+                console.error("Failed to fetch categories", err);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,8 +37,8 @@ export default function ProductForm({ onBack }: ProductFormProps) {
         formData.append("productsName", name);
         formData.append("price", price.toString());
         formData.append("productsDescription", description);
-        formData.append("category", category);
-        formData.append("image", image!);
+        formData.append("category", selectedCategory); // ✅ استخدمي ID بتاع الكاتيجوري هنا
+        if (image) formData.append("image", image);
         formData.append("available", available.toString());
         formData.append("inStock", inStock.toString());
 
@@ -65,8 +80,20 @@ export default function ProductForm({ onBack }: ProductFormProps) {
             </div>
 
             <div className="mb-3">
-                <label className="form-label">Category ID</label>
-                <input type="text" className="form-control" value={category} onChange={e => setCategory(e.target.value)} />
+                <label className="form-label">Category</label>
+                <select
+                    className="form-select"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    required
+                >
+                    <option value="">-- Select a category --</option>
+                    {categories.map((cat) => (
+                        <option key={cat._id} value={cat._id}>
+                            {cat.categoryName}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             <div className="mb-3">

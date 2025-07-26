@@ -3,8 +3,10 @@ import NotificationsList from "./NotificationList";
 import type { Notification } from "../../Types/notificationTypes";
 import CryptoJS from "crypto-js";
 import { ENCRYPTION_KEY, TOKEN_KEY } from "../utils/authUtils";
+import useAuthCheck from "../utils/Hooks/UseAuthCheck";
 
 function NotificationWrapper() {
+    useAuthCheck();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -15,7 +17,7 @@ function NotificationWrapper() {
             const bytes = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY);
             return bytes.toString(CryptoJS.enc.Utf8);
         } catch (err) {
-            console.error("Failed to decrypt token:", err);
+            console.log("Failed to decrypt token:", err);
             return null;
         }
     };
@@ -30,9 +32,10 @@ function NotificationWrapper() {
             });
 
             const data = await res.json();
+            console.log("Notifications response:", data);
             setNotifications(data.notifications || []);
         } catch (err) {
-            console.error("Error fetching notifications", err);
+            console.log("Error fetching notifications", err);
         }
     };
 

@@ -65,7 +65,7 @@ export default function MainNavbar() {
       const newNotifs = all.filter((n: Notification) => new Date(n.createdAt) > lastSeenDate);
       setUnreadCount(newNotifs.length);
     } catch (err) {
-      console.error("Error fetching notifications", err);
+      console.log("Error fetching notifications", err);
     }
   };
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function MainNavbar() {
       fetchNotifications(); // بعدها كل شوية
     }, 15000); // كل 30 ثانية
 
-    return () => clearInterval(interval); // تنظيف عند الخروج
+    return () => clearInterval(interval); 
   }, []);
   
   
@@ -113,7 +113,7 @@ export default function MainNavbar() {
       <Navbar expand="lg" className={`navbar fixed-top ${scrolled ? "navbar-scrolled" : "navbar-custom"}`}>
         <Container>
           <Navbar.Brand as={Link} to="/" className="fw-bold fs-4">
-            {t("navbar.logo")}
+            <img src="/public/images/2لوجو-بني-فاتح-كامل.png" alt="" />
           </Navbar.Brand>
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -126,6 +126,14 @@ export default function MainNavbar() {
               <Nav.Link as={Link} to="/products" className="mx-2  fw-semibold">
                 {t("navbar.products")}
               </Nav.Link>
+              <Nav.Link href="#footer" className="mx-2 fw-semibold" onClick={(e) => {
+                e.preventDefault(); // منع السلوك الافتراضي
+                const footer = document.getElementById("footer");
+                footer?.scrollIntoView({ behavior: "smooth" });
+              }}>
+                {t("navbar.contact")}
+              </Nav.Link>
+
 
               {user && (
                 <Nav.Link as={Link} to="/profile" className="mx-2  fw-semibold">
