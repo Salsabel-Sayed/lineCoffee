@@ -21,14 +21,6 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import categoriesRouter from "./modules/Categories/categories.routes";
 import path from "path";
-import  webPush  from 'web-push';
-import webPushrouter from "./webPush/webPush.route";
-
-
-
-
-
-
 
 
 
@@ -108,31 +100,6 @@ app.use('/wallets', walletRouter);
 app.use('/payments', paymentsRouter);
 app.use('/wishList', wishListRouter);
 app.use('/reports', reportsRouter);
-app.use("/api/notifications", webPushrouter);
-
-// app.post('/api/subscribe', async (req, res) => {
-//   const subscription = req.body;
-
-//   // ممكن تسجله في DB
-//   // await new SubscriptionModel(subscription).save();
-
-//   res.status(201).json({});
-// });
-// app.post('/api/send-notification', async (req, res) => {
-//   const subscription = req.body.subscription; // أو تجيبه من DB
-//   const payload = JSON.stringify({
-//     title: 'Hello from LineCoffee',
-//     body: 'You have a new message!',
-//   });
-
-//   try {
-//     await webPush.sendNotification(subscription, payload);
-//     res.status(200).json({ message: 'Notification sent' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error });
-//   }
-// });
 
 
 

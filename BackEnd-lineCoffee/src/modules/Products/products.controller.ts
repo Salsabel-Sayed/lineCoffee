@@ -20,8 +20,19 @@ import path from "path";
         category,
         available,
         inStock,
+        availableVariants,
       } = req.body;
+
       console.log(req.body);
+     let parsedVariants;
+     try {
+       parsedVariants =
+         typeof availableVariants === "string"
+           ? JSON.parse(availableVariants)
+           : availableVariants;
+     } catch (err) {
+       return next(new AppError("Invalid variants format", 400));
+     }
       
 
       const categoryId = new mongoose.Types.ObjectId(category);
@@ -43,13 +54,14 @@ import path from "path";
       const product = await Products.create({
         productsName,
         productsDescription,
-        price,
+        price: parsedVariants?.length ? undefined : price,
         category: categoryId,
         imageUrl,
         available,
         ratings: [],
         averageRating: 0,
         inStock,
+        availableVariants: parsedVariants,
       });
       console.log("Body Data:");
       console.log("productsName:", productsName);
@@ -66,14 +78,22 @@ import path from "path";
     }
   );
 
-
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
-//? get all products 
+//? get all products  
 export const getAllProducts = catchError(
   async (req: Request, res: Response, next: NextFunction) => {
     const matchStage: any = {};
 
+    // ✅ فلترة بالـ ID (موجودة بالفعل)
     if (req.query.category) matchStage.category = req.query.category;
+
+    // ✅ جديد: فلترة بالاسم (بوكسات مثلاً)
+    if (req.query.categoryName) {
+      const category = await Categories.findOne({ categoryName: req.query.categoryName });
+      if (!category) return next(new AppError("Category not found!", 404));
+      matchStage.category = category._id;
+    }
+
     if (req.query.available)
       matchStage.available = req.query.available === "true";
 
@@ -85,27 +105,33 @@ export const getAllProducts = catchError(
         matchStage.price.$lte = Number(req.query.maxPrice);
     }
 
-    const productsWithRatings = await Products.aggregate([
-      { $match: matchStage },
-      {
-        $lookup: {
-          from: "reviews", // اسم Collection اللي فيه الريفيوهات (غالبًا reviews)
-          localField: "_id",
-          foreignField: "product",
-          as: "reviews",
-        },
-      },
-      {
-        $addFields: {
-          averageRating: { $avg: "$reviews.rating" },
-        },
-      },
-      {
-        $project: {
-          reviews: 0, // لو مش عايزة ترجعي الريفيوهات نفسها
-        },
-      },
-    ]);
+const productsWithRatings = await Products.aggregate([
+  { $match: matchStage },
+  {
+    $lookup: {
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "categoryDetails",
+    },
+  },
+  {
+    $unwind: "$categoryDetails",
+  },
+  {
+    $addFields: {
+      averageRating: { $avg: "$reviews.rating" },
+      categoryName: "$categoryDetails.categoryName",
+    },
+  },
+  {
+    $project: {
+      reviews: 0,
+      categoryDetails: 0,
+    },
+  },
+]);
+
 
     res.status(200).json({ products: productsWithRatings });
   }
@@ -148,8 +174,6 @@ export const getProductById = catchError(
 
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
 //? update product
-
-
 export const updateProduct = catchError(
   async (req: Request, res: Response, next: NextFunction) => {
     const product = await Products.findById(req.params.id);
@@ -160,8 +184,20 @@ export const updateProduct = catchError(
     product.productsName = req.body.productsName || product.productsName;
     product.productsDescription =
       req.body.productsDescription || product.productsDescription;
-    product.price = req.body.price || product.price;
+      if (req.body.price !== undefined && req.body.price !== "") {
+        product.price = req.body.price;
+      }
     product.category = req.body.category || product.category;
+    if (req.body.availableVariants) {
+      try {
+        product.availableVariants = JSON.parse(req.body.availableVariants);
+      } catch (err) {
+        return next(new AppError("Invalid format for availableVariants", 400));
+      }
+    }
+
+
+
 
     // If there's a new image, handle it
 if (req.file) {

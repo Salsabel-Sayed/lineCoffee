@@ -20,9 +20,14 @@ export interface PopulatedOrder {
 
 interface IOrder extends Document {
   user: Schema.Types.ObjectId;
-  items: { product: Schema.Types.ObjectId; quantity: number }[];
+  items: {
+    product: Schema.Types.ObjectId;
+    quantity: number;
+    type?: string;
+    weight?: number;
+  }[];
   totalAmount: number;
-  code:string;
+  code: string;
   discount?: number;
   finalAmount: number;
   coinsEarned: number;
@@ -52,10 +57,10 @@ const OrderSchema = new Schema<IOrder>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     code: {
-  type: String,
-  required: true,
-  unique: true,
-},
+      type: String,
+      required: true,
+      unique: true,
+    },
     items: [
       {
         product: {
@@ -65,6 +70,8 @@ const OrderSchema = new Schema<IOrder>(
         },
         quantity: { type: Number, required: true, min: 1 },
         price: { type: Number, required: true, min: 0 },
+        type: { type: String }, 
+        weight: { type: Number },
       },
     ],
     totalAmount: { type: Number, required: true },

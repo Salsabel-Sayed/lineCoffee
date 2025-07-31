@@ -9,7 +9,6 @@ import upload from "../../middlewares/multer/uploads";
 const ProductsRouter = Router()
 
 ProductsRouter.post('/addProduct',upload.single("image"), createProduct);
-console.log("📦 Request received to addProduct");
 ProductsRouter.get('/getAllProducts',getAllProducts)
 ProductsRouter.get('/getProductById/:id',getProductById)
 ProductsRouter.put('/updateProduct/:id',upload.single("image"),updateProduct)

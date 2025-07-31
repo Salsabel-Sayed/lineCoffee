@@ -24,7 +24,6 @@ import { CoinsDocument } from "../Coins/coins.model";
       logging: boolean;
       createdAt?: Date;
       currentDiscounts: any;
-      playerId?: string;
     }
 
     // إنشاء مخطط Mongoose مع تحديد الأنواع
@@ -70,7 +69,6 @@ import { CoinsDocument } from "../Coins/coins.model";
           type: Schema.Types.ObjectId,
           ref: "Wallet",
         },
-        playerId: { type: String },
         logging: {
           type: Boolean,
           default: false,

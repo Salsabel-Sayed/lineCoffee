@@ -151,27 +151,18 @@ export const logoutUser = catchError(async (req: AuthenticatedRequest, res: Resp
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
 //? update user
 export const updateUser = catchError(
-  async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const userId = req.user?.userId;
-    if (!userId) {
-      return next(new AppError("Unauthorized access!", 401));
-    }
+    if (!userId) return next(new AppError("Unauthorized access!", 401));
 
     const findUser = await User.findById(userId);
-    if (!findUser) {
-      return next(new AppError("User not found!", 404));
-    }
+    if (!findUser) return next(new AppError("User not found!", 404));
 
     if (req.body.email || req.body.userPhone) {
       const existingUser = await User.findOne({
         $or: [{ email: req.body.email }, { userPhone: req.body.userPhone }],
         _id: { $ne: userId },
       });
-
       if (existingUser) {
         return next(
           new AppError(
@@ -183,39 +174,43 @@ export const updateUser = catchError(
     }
 
     let passwordChanged = false;
-
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);
       passwordChanged = true;
     }
 
-    const updated = await User.updateOne({ _id: userId }, req.body);
+    const updated = await User.findByIdAndUpdate(userId, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-    // ✨ لو الباسورد اتغير نولد توكن جديد
+    if (!updated) {
+      return next(new AppError("Failed to update user!", 400));
+    }
+
     let newToken: string | null = null;
-
     if (passwordChanged) {
       newToken = jwt.sign(
         {
-          userId: findUser._id,
-          email: req.body.email || findUser.email,
-          role: findUser.role,
+          userId: updated._id,
+          email: updated.email,
+          role: updated.role,
         },
         "thisisLineCoffeeProj",
         { expiresIn: "7d" }
       );
     }
 
-    await findUser.save();
-
     res.json({
       message: "Done!",
       updated,
-      ...(newToken && { authorization: newToken }), // لو فيه توكن جديد، نرجعه
+      ...(newToken && { authorization: newToken }),
     });
   }
 );
+
+
 
 
 //* ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -374,29 +369,4 @@ export const adminDeleteUser = catchError(
     res.json({ message: "User deleted by admin", deleted });
   }
 );
-//* ////////////////////////////////////////////////////////////////////////////////////////////////////
-//? one signal (admin)
-export const oneSignal = catchError(
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction):Promise<any> => {
-    try {
-      const userId = req.user?.userId; 
-      const { playerId } = req.body;
 
-      if (!playerId)
-        return res.status(400).json({ message: "Missing playerId" });
-
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { playerId },
-        { new: true }
-      );
-
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      res.status(200).json({ message: "playerId updated", user });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Server error" });
-    }
-  }
-);
