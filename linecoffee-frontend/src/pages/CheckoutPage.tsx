@@ -5,9 +5,40 @@ import CryptoJS from "crypto-js";
 import axios from "axios";
 import { ENCRYPTION_KEY, TOKEN_KEY, getUserIdFromToken } from "../utils/authUtils";
 
+
+interface CartItem {
+    id: string;
+    name: string;
+    image: string;
+    price: number;
+    quantity: number;
+    type?: string;
+    weight?: number;
+}
+
+interface OrderItem {
+    product: string;
+    quantity: number;
+    type?: string;
+    weight?: number;
+}
+
+
 export default function CheckoutPage() {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
-    const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
+    const {
+        cartItems,
+        removeFromCart,
+        updateQuantity,
+        clearCart
+    } = useCart() as {
+        cartItems: CartItem[];
+        removeFromCart: (args: { id: string; type?: string; weight?: number }) => void;
+        updateQuantity: (args: { id: string; newQty: number; type?: string; weight?: number }) => void;
+        clearCart: () => void;
+    };
+
+
 
     const [coupon, setCoupon] = useState("");
     const [couponDiscount, setCouponDiscount] = useState(0);
@@ -79,13 +110,23 @@ export default function CheckoutPage() {
         }
 
         try {
+            console.log("cartItems",cartItems)
             const res = await axios.post(
                 `${backendURL}/orders/placeOrder`,
                 {
-                    items: cartItems.map(item => ({
-                        product: item.id,
-                        quantity: item.quantity,
-                    })),
+                    items: cartItems.map((item): OrderItem => {
+                        const dataToSend: OrderItem = {
+                            product: item.id,
+                            quantity: item.quantity,
+                        };
+
+                        if (item.type) dataToSend.type = item.type;
+                        if (item.weight !== undefined) dataToSend.weight = item.weight;
+
+                        return dataToSend;
+                    }),
+
+
                     couponCode: coupon,
                     walletAmount: walletValid ? walletAmount : 0,
                     shippingAddress: address,
@@ -130,8 +171,13 @@ export default function CheckoutPage() {
                                 name={item.name}
                                 price={item.price * item.quantity}
                                 quantity={item.quantity}
-                                onRemove={() => removeFromCart(item.id)}
-                                onQuantityChange={(qty) => updateQuantity(item.id, qty)}
+                                onRemove={() =>
+                                    removeFromCart({ id: item.id, type: item.type, weight: item.weight })
+                                }
+                                onQuantityChange={(qty) =>
+                                    updateQuantity({ id: item.id, newQty: qty, type: item.type, weight: item.weight })
+                                }
+
                             />
                         ))}
                     </div>

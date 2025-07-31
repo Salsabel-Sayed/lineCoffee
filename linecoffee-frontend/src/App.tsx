@@ -26,7 +26,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import MainLayout from './layouts/MainLayout'
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
-import NotificationSetup from './assets/WebPushNote/noteSetup'
+
 
 
 interface OneSignalType {
@@ -53,7 +53,7 @@ const initOneSignal = () => {
   window.OneSignal = window.OneSignal || [];
   window.OneSignal.push(function () {
     window.OneSignal.init({
-      appId: "YOUR-ONESIGNAL-APP-ID", // استبدليه بتاعك
+      appId: import.meta.env.VITE_ONESIGNAL_APP_ID, // استبدليه بتاعك
     });
 
     // بعد ما يتفعل، خدي الـ playerId
@@ -62,8 +62,8 @@ const initOneSignal = () => {
         const playerId = await window.OneSignal.getUserId();
         console.log("playerId: ", playerId);
 
-        // ابعتيه للباك اند
-        fetch(`${backendURL}/api/user/playerId`, {
+   
+        fetch(`${backendURL}/users/playerId`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -93,7 +93,6 @@ function App() {
 
   return (
     <>
-      <NotificationSetup />
       <ToastContainer />
         <LanguageProvider>
         <WishListProvider>

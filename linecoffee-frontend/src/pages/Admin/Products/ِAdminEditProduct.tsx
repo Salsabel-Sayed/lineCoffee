@@ -8,27 +8,39 @@ type Category = {
     categoryName: string;
 };
 
+type ProductFormData = {
+    productsName: string;
+    productsDescription: string;
+    category: string;
+    imageUrl: string;
+    availableVariants?: {
+        type: string;
+        weights: {
+            weight: number;
+            price: number;
+        }[];
+    }[];
+    price: number;
+};
+
 export default function AdminEditProduct() {
     const { productId } = useParams();
     const isEditMode = !!productId;
     const navigate = useNavigate();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<ProductFormData>({
         productsName: "",
         productsDescription: "",
-        price: 0,
         category: "",
         imageUrl: "",
+        availableVariants: [],
+        price: 0,
     });
 
     const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  
-
     const [categories, setCategories] = useState<Category[]>([]);
-      
 
-    // Load product data if editing
     useEffect(() => {
         if (isEditMode) {
             axios
@@ -38,16 +50,16 @@ export default function AdminEditProduct() {
                     setFormData({
                         productsName: product.productsName,
                         productsDescription: product.productsDescription,
-                        price: product.price,
                         category: product.category,
                         imageUrl: product.imageUrl,
+                        price: product.price,
+                        availableVariants: product.availableVariants || [],
                     });
                 })
                 .catch((err) => console.log("Error loading product:", err));
         }
     }, [productId, backendURL, isEditMode]);
 
-    // Load categories
     useEffect(() => {
         axios
             .get(`${backendURL}/categories/getAllCategories`)
@@ -60,8 +72,15 @@ export default function AdminEditProduct() {
         const form = new FormData();
         form.append("productsName", formData.productsName);
         form.append("productsDescription", formData.productsDescription);
-        form.append("price", String(formData.price));
         form.append("category", formData.category);
+        if (formData.price > 0) {
+            form.append("price", String(formData.price));
+        }
+
+        if (formData.availableVariants) {
+            form.append("availableVariants", JSON.stringify(formData.availableVariants));
+        }
+
         if (selectedImageFile) {
             form.append("image", selectedImageFile);
         }
@@ -108,16 +127,108 @@ export default function AdminEditProduct() {
                     />
                 </div>
 
-                {/* السعر */}
+                {/* السعر الأساسي */}
                 <div className="mb-3">
-                    <label className="form-label">السعر</label>
+                    <label className="form-label">السعر الأساسي</label>
                     <input
                         type="number"
                         className="form-control"
                         value={formData.price}
                         onChange={(e) => setFormData({ ...formData, price: +e.target.value })}
-                        required
                     />
+                </div>
+
+                {/* الأوزان والأنواع */}
+                <div className="mb-3">
+                    <label className="form-label">الأنواع والأوزان</label>
+                    {formData.availableVariants && formData.availableVariants.length > 0 && (
+                        <>
+                            {formData.availableVariants.map((variant, variantIdx) => (
+                                <div key={variantIdx} className="mb-3 border rounded p-2">
+                                    <input
+                                        type="text"
+                                        className="form-control mb-2"
+                                        placeholder="نوع (مثلاً: سادة، محوج)"
+                                        value={variant.type}
+                                        onChange={(e) => {
+                                            const updated = [...formData.availableVariants!];
+                                            updated[variantIdx].type = e.target.value;
+                                            setFormData({ ...formData, availableVariants: updated });
+                                        }}
+                                    />
+                                    {variant.weights.map((w, wIdx) => (
+                                        <div key={wIdx} className="d-flex gap-2 mb-2">
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="الوزن (جم)"
+                                                value={w.weight}
+                                                onChange={(e) => {
+                                                    const updated = [...formData.availableVariants!];
+                                                    updated[variantIdx].weights[wIdx].weight = +e.target.value;
+                                                    setFormData({ ...formData, availableVariants: updated });
+                                                }}
+                                            />
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="السعر"
+                                                value={w.price}
+                                                onChange={(e) => {
+                                                    const updated = [...formData.availableVariants!];
+                                                    updated[variantIdx].weights[wIdx].price = +e.target.value;
+                                                    setFormData({ ...formData, availableVariants: updated });
+                                                }}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger"
+                                                onClick={() => {
+                                                    const updated = [...formData.availableVariants!];
+                                                    updated[variantIdx].weights.splice(wIdx, 1);
+                                                    setFormData({ ...formData, availableVariants: updated });
+                                                }}
+                                            >
+                                                حذف وزن
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-primary"
+                                        onClick={() => {
+                                            const updated = [...formData.availableVariants!];
+                                            updated[variantIdx].weights.push({ weight: 0, price: 0 });
+                                            setFormData({ ...formData, availableVariants: updated });
+                                        }}
+                                    >
+                                        ➕ إضافة وزن
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-danger ms-2"
+                                        onClick={() => {
+                                            const updated = formData.availableVariants!.filter((_, i) => i !== variantIdx);
+                                            setFormData({ ...formData, availableVariants: updated });
+                                        }}
+                                    >
+                                        🗑 حذف النوع
+                                    </button>
+                                </div>
+                            ))}
+                        </>
+                    )}
+                    <button
+                        type="button"
+                        className="btn btn-outline-success mt-2"
+                        onClick={() => {
+                            const updated = [...(formData.availableVariants || [])];
+                            updated.push({ type: "", weights: [{ weight: 0, price: 0 }] });
+                            setFormData({ ...formData, availableVariants: updated });
+                        }}
+                    >
+                        ➕ إضافة نوع جديد
+                    </button>
                 </div>
 
                 {/* الفئة */}
@@ -130,7 +241,7 @@ export default function AdminEditProduct() {
                         required
                     >
                         <option value="">اختر فئة</option>
-                        {categories.map((cat: Category) => (
+                        {categories.map((cat) => (
                             <option key={cat._id} value={cat._id}>
                                 {cat.categoryName}
                             </option>
@@ -145,14 +256,13 @@ export default function AdminEditProduct() {
                         type="file"
                         className="form-control"
                         accept="image/*"
-                        
                         onChange={(e) => {
                             if (e.target.files?.[0]) setSelectedImageFile(e.target.files[0]);
                         }}
                     />
                 </div>
 
-                {/* عرض الصورة الحالية لو بنعدل */}
+                {/* عرض الصورة الحالية */}
                 {isEditMode && formData.imageUrl && (
                     <div className="mb-3">
                         <p>الصورة الحالية:</p>
@@ -165,7 +275,6 @@ export default function AdminEditProduct() {
                     </div>
                 )}
 
-                {/* زرار حفظ */}
                 <button type="submit" className="btn btn-primary">
                     {isEditMode ? "💾 حفظ التعديلات" : "➕ إضافة المنتج"}
                 </button>

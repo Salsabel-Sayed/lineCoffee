@@ -2,6 +2,7 @@
 import HeroSection from "./HeroScetion";
 import ProductsBase from "./CategoriesBase";
 import CoinsSection from "./CoinsSection";
+import BoxesOffers from "./BoxesOffers";
 
 
 
@@ -14,7 +15,8 @@ function Home() {
     <>
       <HeroSection/>
       <CoinsSection />
-      <ProductsBase/>
+      <ProductsBase />
+      <BoxesOffers />
       
     </>
   );

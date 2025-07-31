@@ -6,7 +6,7 @@ import { getDecryptedToken } from "../utils/authUtils";
 type Product = {
     id: string;
     name: string;
-    price: number;
+    price?: number;
     image?: string;
     description?: string;
     averageRating?: number;
@@ -15,7 +15,7 @@ type Product = {
 type RawProductFromBackend = {
     _id: string;
     productsName: string;
-    price: number;
+    price?: number;
     imageUrl?: string;
     averageRating?: number;
     productsDescription?: string;
@@ -49,7 +49,7 @@ export const WishListProvider = ({ children }: { children: React.ReactNode }) =>
                 const mapped = res.data.wishlist.map((p: RawProductFromBackend) => ({
                     id: p._id,
                     name: p.productsName,
-                    price: p.price,
+                    price: p.price ?? 0,
                     image: p.imageUrl,
                     averageRating: p.averageRating,
                     description: p.productsDescription,

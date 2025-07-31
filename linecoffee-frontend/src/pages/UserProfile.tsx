@@ -6,11 +6,12 @@ import CoinsList from "./CoinsList";
 import Wallet from "./WalletList";
 import type { Notification } from "../../Types/notificationTypes";
 import SendReportForm from "./SendReportForm";
-import EditeUserForm from "./EditeUserForm";
+
 import NotificationsList from './NotificationList';
-import { clearToken, getDecryptedToken } from "../utils/authUtils";
+import { clearToken, getDecryptedToken, getUserIdFromToken } from "../utils/authUtils";
 import useAuthCheck from "../utils/Hooks/UseAuthCheck";
 import CouponsList from "./CouponsList";
+import EditUserForm from "./EditeUserForm";
 
 
 
@@ -50,7 +51,7 @@ function UserProfile() {
 
       setUserData({
         name: user.userName || "",
-        address: user.userAddress || "",
+        address: user.address || "",
         phone: user.userPhone || "",
         email: user.email || "",
       });
@@ -133,10 +134,40 @@ function UserProfile() {
           {/* main page */}
           <div className="col-12 col-md-8 col-lg-9">
             <div className="mainPage p-4 ">
+
               {activeTab === "profile" && (
-                <EditeUserForm
-                  userData={userData}
-                  onSave={(updatedData: typeof userData) => setUserData(updatedData)}
+                <EditUserForm
+                  user={{ ...userData }} // تأكد إنه نفس الـ type
+                  onSave={async (updatedData) => {
+                    try {
+                      const token = getDecryptedToken();
+                      const userId = getUserIdFromToken();
+
+                      if (!token || !userId) {
+                        return toast.error("User not logged in");
+                      }
+
+                      const backendData = {
+                        userName: updatedData.name,
+                        address: updatedData.address,
+                        userPhone: updatedData.phone,
+                        email: updatedData.email,
+                      };
+
+                      await axios.put(`${backendURL}/users/updateUser/${userId}`, backendData, {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      });
+
+                      toast.success("User info updated!");
+                      setUserData(updatedData); // update frontend view
+                      setRefreshFlag((prev) => !prev); // re-fetch data
+                    } catch (error) {
+                      toast.error("Failed to update user info");
+                      console.error(error);
+                    }
+                  }}
 
                 />
               )}

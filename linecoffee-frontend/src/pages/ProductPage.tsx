@@ -11,19 +11,28 @@ type Product = {
     name: string;
     description?: string;
     image: string;
-    price: number;
     category?: string;
     quantity: number;
     averageRating?: number;
+    price?: number;
+    availableVariants?: {
+        type: string;
+        weights: { weight: number; price: number }[];
+    }[];
+
 };
 type RawProduct = {
     _id: string;
     productsName: string;
     productsDescription?: string;
     imageUrl?: string;
-    price: number;
     category?: string;
     averageRating?: number;
+    price?: number;
+    availableVariants?: {
+        type: string;
+        weights: { weight: number; price: number }[];
+    }[];
 };
 
 type Category = {
@@ -64,7 +73,9 @@ function ProductsPage() {
                     price: p.price,
                     category: p.category,
                     quantity: 1,
-                    averageRating: p.averageRating
+                    averageRating: p.averageRating,
+                    availableVariants: p.availableVariants,
+
                 }));
 
                 setProducts(mappedProducts);

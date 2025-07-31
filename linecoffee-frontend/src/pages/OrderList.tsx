@@ -16,8 +16,12 @@ type Order = {
         product?: {
             productsName: string;
             price: number;
+            type?: string;
+            weight?: number;
         } | string;
         quantity: number;
+        type?: string;
+        weight?: number;
         
       }[];
     shippingAddress: string;
@@ -69,23 +73,29 @@ function OrdersList({ orders }: OrdersListProps) {
                                                         <strong>Products:</strong>
                                                         <div className="grid grid-cols-2 gap-3 ps-3">
                                                             {order.items.map((item, i) => {
-                                                                const productName =
-                                                                    typeof item.product === "object" && "productsName" in item.product
-                                                                        ? item.product.productsName
-                                                                        : "Unnamed Product";
+                                                                const productName = typeof item.product === "object" && item.product?.productsName
+                                                                    ? item.product.productsName
+                                                                    : "Unnamed Product";
+
 
                                                                 return (
-                                                                    <div
-                                                                        key={`${order.id}-${i}`}
-                                                                        className="glass-btn p-2 rounded-md shadow-sm"
-                                                                    >
-                                                                        <div className="text-gray-700 font-medium">{productName}</div>
+                                                                    <div key={`${order.id}-${i}`} className="">
+                                                                        <div className="proNam d-flex justify-content-evenly glass-btn">
+                                                                            <strong>name : </strong>
+                                                                            <p className="text-gray-700 font-medium">{productName}</p>
+                                                                        </div>
                                                                         <div className="text-sm text-gray-500  glass-btn">
+                                                                            <strong>quantity : </strong>
                                                                             {item.quantity}
                                                                             {typeof item.product === "object" && "price" in item.product && (
                                                                                 <> <span>× {item.product.price} EGP</span></>
                                                                             )}
                                                                         </div>
+                                                                        <div className="text-gray-700 font-medium glass-btn">
+                                                                            {item.type && `  ${item.type}`}
+                                                                            {item.weight && ` - ${item.weight}g`}
+                                                                        </div>
+
 
                                                                     </div>
                                                                 );

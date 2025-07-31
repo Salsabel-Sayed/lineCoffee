@@ -6,8 +6,12 @@ type Product = {
     _id: string;
     productsName: string;
     imageUrl?: string;
-    price: number;
     productsDescription: string;
+    availableVariants?: {
+        type: string;
+        weights: { weight: number; price: number }[];
+    }[];
+    price?: number;
 };
 
 export default function AdminProductList() {
@@ -52,7 +56,29 @@ export default function AdminProductList() {
                             <div className="card-body">
                                 <h5 className="card-title">{product.productsName}</h5>
                                 <p className="card-text text-truncate">{product.productsDescription}</p>
-                                <p className="fw-bold">{product.price} EGP</p>
+                                {product.availableVariants && product.availableVariants.length > 0 ? (
+                                    <ul className="mb-2 ps-3">
+                                        {product.availableVariants.map((variant, i) => (
+                                            <li key={i}>
+                                                <strong>{variant.type}:</strong>
+                                                <ul>
+                                                    {variant.weights.map((w, idx) => (
+                                                        <li key={idx}>
+                                                            {w.weight} جم - {w.price} جنيه
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : product.price ? (
+                                    <p className="mb-2"><strong>السعر:</strong> {product.price} جنيه</p>
+                                ) : (
+                                    <p className="mb-2 text-muted">لا يوجد سعر</p>
+                                )}
+
+
+
                                 <button
                                     className="btn btn-sm btn-outline-primary me-2"
                                     onClick={() => navigate(`/admin/edit-product/${product._id}`)}

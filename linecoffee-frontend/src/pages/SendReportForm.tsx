@@ -33,19 +33,21 @@ export default function SendReportForm() {
     };
 
     return (
-        <div>
-            <h4>📝 Send Report to Admin</h4>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label className="form-label">Subject</label>
-                    <input className="form-control" value={subject} onChange={(e) => setSubject(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Message</label>
-                    <textarea className="form-control" rows={4} value={message} onChange={(e) => setMessage(e.target.value)} />
-                </div>
-                <button type="submit" className="btn btn-primary">Send</button>
-            </form>
-        </div>
+        <section id="sendReport">
+            <div>
+                <h4>📝 Send Report to us</h4>
+                <form onSubmit={handleSubmit} className=" glass-btn">
+                    <div className="mb-3">
+                        <label className="form-label">Subject</label>
+                        <input className="form-control  glass-btn" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">Message</label>
+                        <textarea className="form-control glass-btn" rows={4} value={message} onChange={(e) => setMessage(e.target.value)} />
+                    </div>
+                    <button type="submit" className="btn glass-btn">Send</button>
+                </form>
+            </div>
+        </section>
     );
 }

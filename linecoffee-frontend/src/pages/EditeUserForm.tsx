@@ -1,109 +1,67 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Form, Button } from "react-bootstrap";
 
-type Props = {
-  userData: {
-    name: string;
-    address: string;
-    phone: string;
-    email: string;
+interface UserData {
+  _id?: string;
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  role?: string;
+}
+
+interface EditUserFormProps {
+  user: UserData;
+  onSave: (updatedData: UserData) => void;
+}
+
+const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSave }) => {
+  const [formData, setFormData] = useState<UserData>(user);
+
+  useEffect(() => {
+    setFormData(user); // تحميل البيانات القديمة لما الفورم تتفتح
+  }, [user]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  onSave: (data: {
-    name: string;
-    address: string;
-    phone: string;
-    email: string;
-    password?: string;
-  }) => void;
-};
 
-function EditeUserForm({ userData, onSave }: Props) {
-  const [formData, setFormData] = useState({ ...userData, password: "" });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleSave = () => {
+    onSave(formData);
   };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const updatedData = {
-      name: formData.name.trim() || userData.name,
-      address: formData.address.trim() || userData.address,
-      phone: formData.phone.trim() || userData.phone,
-      email: formData.email.trim() || userData.email,
-    };
-
-    if (formData.password.trim()) {
-      onSave({ ...updatedData, password: formData.password });
-    } else {
-      onSave(updatedData);
-    }
-  };
-  
 
   return (
-    <div className="edit-user-form p-4 glass-effect">
-      <h3 className="mb-4">Edit Your Information</h3>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Name</label>
-          <input
-            type="text"
-            name="name"
-            className="form-control glass-btn"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </div>
+    <Form>
+      <Form.Group className="mb-3" controlId="formName">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} />
+      </Form.Group>
 
-        <div className="mb-3">
-          <label className="form-label">Address</label>
-          <input
-            type="text"
-            name="address"
-            className="form-control glass-btn"
-            value={formData.address}
-            onChange={handleChange}
-          />
-        </div>
+      <Form.Group className="mb-3" controlId="formEmail">
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} />
+      </Form.Group>
 
-        <div className="mb-3">
-          <label className="form-label">Phone</label>
-          <input
-            type="tel"
-            name="phone"
-            className="form-control glass-btn"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-        </div>
+      <Form.Group className="mb-3" controlId="formaddress">
+        <Form.Label>address</Form.Label>
+        <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} />
+      </Form.Group>
 
-        <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            name="email"
-            className="form-control glass-btn"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
+      <Form.Group className="mb-3" controlId="formPhone">
+        <Form.Label>Phone</Form.Label>
+        <Form.Control type="text" name="phone" value={formData.phone} onChange={handleChange} />
+      </Form.Group>
 
-        <div className="mb-3">
-          <label className="form-label">New Password (optional)</label>
-          <input
-            type="password"
-            name="password"
-            className="form-control glass-btn"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button type="submit" className="btn btn-primary mt-3">Save</button>
-      </form>
-    </div>
+      <div className="d-flex justify-content-end">
+        <Button variant="primary" onClick={handleSave}>
+          Save
+        </Button>
+      </div>
+    </Form>
   );
-}
-export default EditeUserForm;
+};
 
+export default EditUserForm;

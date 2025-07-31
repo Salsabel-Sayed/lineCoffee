@@ -139,20 +139,9 @@ body {
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 7px 11px 9px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px 23px;
+        padding: 6px 16px;
     color: var(--colorWheat);
-    margin: 10px 0
-}
-.glass-btn{
-    background: rgba(255, 255, 255, 0.15) ;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 7px 11px 9px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px 23px;
-    color: var(--colorWheat);
-    margin: 10px 0
+    margin: 6px 0;
 }
 
 
@@ -259,10 +248,11 @@ line-height:1;
 /** ///////////////////////////////////////////////////////////////////////////////////////// */
 /** categories Base section */
 
-#categoriesBase img{
+#categoriesBase img,#offersSection img{
   width: 100%;
+  border-radius: 10px;
 }
-#categoriesBase .oneSide{
+#categoriesBase .oneSide, #offersSection{
   padding: 10px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 20px;
@@ -376,6 +366,10 @@ line-height:1;
 .borderBtnStl{
   border: 1px solid 
 }
+
+.weight{
+  list-style: none;
+}
 /** ///////////////////////////////////////////////////////////////////////////////////////// */
 /** product page section */
 .productPage .list-group-item.active{
@@ -438,14 +432,14 @@ background-color: var(--colorSoftOlive);
 /** order user section */
 
  .desginOrderInfo{
-      display: flex;
+    display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
    
 }
 .statusBtn{
-   padding: 10px;
+    padding: 10px;
     font-size: larger;
 
 }

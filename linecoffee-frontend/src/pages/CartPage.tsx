@@ -56,8 +56,10 @@ export default function CartPage() {
                                     name={item.name}
                                     price={item.price * item.quantity}
                                     quantity={item.quantity}
-                                    onRemove={() => removeFromCart(item.id)}
-                                    onQuantityChange={(newQty) => updateQuantity(item.id, newQty)}
+                                    onRemove={() => removeFromCart({ id: item.id, type: item.type, weight: item.weight })}
+                                    onQuantityChange={(newQty) => updateQuantity({ id: item.id, newQty, type: item.type, weight: item.weight })}
+
+
                                 />
                             ))}
                         </div>

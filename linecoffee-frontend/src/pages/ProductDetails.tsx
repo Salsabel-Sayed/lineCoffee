@@ -27,7 +27,15 @@ type Product = {
   category?: string;
   quantity: number;
   averageRating?: number;
-};;
+  availableVariants?: {
+    type: string;
+    weights: {
+      weight: number;
+      price: number;
+    }[];
+  }[];
+};
+
 
 
 function renderStars(rating: number) {
@@ -73,11 +81,23 @@ export default function ProductDetails() {
   const { addToCart } = useCart();
   const { toggleWish, wishList } = useWishList();
   const inWishList = product ? wishList.some((p: { id: string }) => p.id === product.id) : false;
+  const [selectedVariantType, setSelectedVariantType] = useState<string | null>(null);
+  const [selectedWeight, setSelectedWeight] = useState<number | null>(null);
 
+
+  interface Weight {
+    weight: number;
+    price: number;
+  }
+
+  interface Variant {
+    type: string;
+    weights: Weight[];
+  }
   const fetchProduct = async () => {
     try {
       const res = await axios.get(`${backendURL}/products/getProductById/${productId}`);
-      setProduct({
+      const fetchedProduct = {
         id: res.data.product._id,
         name: res.data.product.productsName,
         description: res.data.product.productsDescription,
@@ -85,11 +105,48 @@ export default function ProductDetails() {
         price: res.data.product.price,
         averageRating: res.data.product.averageRating,
         quantity: 1,
-      });
+        availableVariants: res.data.product.availableVariants,
+      };
+
+      setProduct(fetchedProduct);
+
+      const allVariants: Variant[] = fetchedProduct.availableVariants || [];
+      if (allVariants.length > 0) {
+        let lowest = { type: "", weight: 0, price: Infinity };
+
+        allVariants.forEach((variant: Variant) => {
+          variant.weights.forEach((w: Weight) => {
+            if (w.price < lowest.price) {
+              lowest = { type: variant.type, weight: w.weight, price: w.price };
+            }
+          });
+        });
+
+        setSelectedVariantType(lowest.type);
+        setSelectedWeight(lowest.weight);
+      }
     } catch (err) {
       console.log("Error fetching product", err);
     }
   };
+
+  const getCurrentPrice = () => {
+    if (!product) return 0;
+
+    // منتج بدون أنواع أو أوزان
+    if (!product.availableVariants || product.availableVariants.length === 0) {
+      return product.price;
+    }
+
+    // منتج بأنواع وأوزان
+    if (!selectedVariantType || !selectedWeight) return 0;
+
+    const variant = product.availableVariants.find(v => v.type === selectedVariantType);
+    const weightObj = variant?.weights.find(w => w.weight === selectedWeight);
+    return weightObj?.price || 0;
+  };
+
+
 
   const fetchReviews = async () => {
     try {
@@ -146,19 +203,32 @@ export default function ProductDetails() {
       return navigate("/login");
     }
 
-    if (product) {
-      const formattedProduct = {
-        id: product.id,
-        name: product.name,
-        image: product.image || "",
-        price: product.price,
-        quantity: 1,
-      };
+    if (!product) return;
 
-      addToCart(formattedProduct);
-      toast.success("تمت الإضافة إلى السلة!");
+    const isVariantProduct = product.availableVariants && product.availableVariants.length > 0;
+    const price = getCurrentPrice();
+
+    if (price === 0) {
+      toast.error("من فضلك اختر النوع والوزن أولاً");
+      return;
     }
+
+    const formattedProduct = {
+      id: product.id,
+      name: isVariantProduct
+        ? `${product.name} - ${selectedVariantType} - ${selectedWeight}g`
+        : product.name,
+      image: product.image || "",
+      price,
+      quantity: 1,
+      type: isVariantProduct ? selectedVariantType || "" : "",  // لو مفيش نوع خليه فاضي
+      weight: isVariantProduct ? selectedWeight || 0 : 0        // لو مفيش وزن خليه 0
+    };
+
+    addToCart(formattedProduct);
+    toast.success("تمت الإضافة إلى السلة!");
   };
+
 
   const handleToggleWish = () => {
     const token = getDecryptedToken();
@@ -179,6 +249,7 @@ export default function ProductDetails() {
       toast.success("تمت الإضافة/الإزالة من المفضلة");
     }
   };
+
 
   if (!product) return <div className="container mt-5">Product not found!</div>;
 
@@ -202,7 +273,46 @@ export default function ProductDetails() {
             {renderStars(product.averageRating ?? 0)}
             <span className="ms-2">({(product.averageRating ?? 0).toFixed(1)})</span>
           </div>
-          <h4 className="fw-bold text-success mb-3">{product.price} EGP</h4>
+          <h4 className="fw-bold text-success mb-3">
+            {getCurrentPrice()} EGP
+          </h4>
+
+          <div className="d-flex gap-2 flex-wrap mb-3">
+            {product.availableVariants?.map((variant) => (
+              <button
+                key={variant.type}
+                className={`btn btn-outline-dark ${selectedVariantType === variant.type ? "active border-success" : ""}`}
+                onClick={() => {
+                  setSelectedVariantType(variant.type);
+                  setSelectedWeight(null); // نعيد ضبط الوزن لما النوع يتغير
+                }}
+              >
+                {variant.type}
+              </button>
+            ))}
+          </div>
+
+          <div className="d-flex gap-2 flex-wrap mb-3">
+            {product.availableVariants
+              ?.filter((v) => v.type === selectedVariantType)
+              .flatMap((variant) =>
+                variant.weights.map((w) => (
+                  <button
+                    key={`${variant.type}-${w.weight}`}
+                    className={`btn btn-outline-secondary ${selectedWeight === w.weight && selectedVariantType === variant.type ? "active border-success" : ""}`}
+                    onClick={() => {
+                      setSelectedVariantType(variant.type);
+                      setSelectedWeight(w.weight);
+                    }}
+                  >
+                    {variant.type} - {w.weight}g - {w.price} EGP
+                  </button>
+                ))
+              )}
+          </div>
+
+
+
 
           <button
             className={`btn btn-sm ${inWishList ? "btn-warning" : "btn-outline-warning"} me-2`}
